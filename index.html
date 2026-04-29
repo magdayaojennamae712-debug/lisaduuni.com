@@ -1,0 +1,2600 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lisaduuni.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:       #08090a;
+  --bg2:      #0d0e10;
+  --bg3:      #111214;
+  --bg4:      #141618;
+  --ink:      #f0ede8;
+  --ink2:     rgba(240,237,232,0.65);
+  --ink3:     rgba(240,237,232,0.38);
+  --ink4:     rgba(240,237,232,0.18);
+  --border:   rgba(240,237,232,0.08);
+  --border2:  rgba(240,237,232,0.14);
+  --lime:     #c8f060;
+  --lime-dim: rgba(200,240,96,0.12);
+  --lime-bdr: rgba(200,240,96,0.25);
+  --green-bg: #0d1f05;
+  --radius:   14px;
+  --radius-lg:20px;
+  --radius-pill:100px;
+  --font-head:'Instrument Serif', serif;
+  --font-body:'Geist', sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+input,textarea,select,button{font-family:var(--font-body)}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;background:rgba(8,9,10,0.92);backdrop-filter:blur(16px)}
+.nav-logo{font-size:15px;font-weight:600;letter-spacing:0.04em;color:var(--ink)}
+.nav-logo span{color:var(--lime)}
+.nav-links{display:flex;align-items:center;gap:10px}
+.nav-burger{display:none;background:none;border:none;color:var(--ink);font-size:20px;cursor:pointer}
+
+/* BUTTONS */
+.btn-primary{background:var(--lime);color:var(--bg);border:none;padding:11px 22px;border-radius:var(--radius-pill);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;display:inline-block}
+.btn-primary:hover{background:#d4f575;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--ink2);padding:11px 22px;border-radius:var(--radius-pill);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);transition:all 0.2s;display:inline-block}
+.btn-outline:hover{border-color:rgba(240,237,232,0.38);color:var(--ink)}
+.btn-primary.large,.btn-outline.large{padding:13px 28px;font-size:14px}
+.btn-danger{background:#7f1d1d;color:#fca5a5;border:1px solid #991b1b;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px}
+.btn-sm{padding:6px 14px;font-size:12px}
+
+/* HERO */
+.hero{padding:72px 40px 64px;position:relative}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--lime-dim);border:1px solid var(--lime-bdr);border-radius:var(--radius-pill);padding:5px 14px;font-size:11px;font-weight:500;color:var(--lime);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:28px}
+.blink-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-family:var(--font-head);font-size:clamp(42px,6vw,68px);line-height:1.04;color:var(--ink);max-width:600px;margin-bottom:20px;font-weight:400}
+.hero h1 em{font-style:italic;color:var(--lime)}
+.hero-sub{font-size:15px;color:var(--ink3);max-width:440px;line-height:1.7;margin-bottom:36px;font-weight:300}
+.hero-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:56px}
+.hero-stats{display:flex;gap:36px;flex-wrap:wrap;align-items:center}
+.stat-num{font-family:var(--font-head);font-size:30px;color:var(--ink);font-weight:400;display:block}
+.stat-lbl{font-size:11px;color:var(--ink4);text-transform:uppercase;letter-spacing:0.09em}
+.stat-div{width:1px;height:36px;background:var(--border)}
+.hero-cards{position:absolute;right:40px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px}
+
+/* WORKER PREVIEW CARDS */
+.wcard-float{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;width:260px;transition:border-color 0.2s}
+.wcard-float:hover{border-color:var(--lime-bdr)}
+.wcard-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.av-lime{background:#1a2e0a;color:var(--lime);border:1px solid rgba(200,240,96,0.2)}
+.av-blue{background:#0a1f2e;color:#60b4f0;border:1px solid rgba(96,180,240,0.2)}
+.av-pink{background:#2e0a1f;color:#f060b4;border:1px solid rgba(240,96,180,0.2)}
+.wcard-name{font-size:13px;font-weight:500;color:var(--ink)}
+.wcard-role{font-size:11px;color:var(--ink3);margin-top:1px}
+.avail-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-bg);border:1px solid rgba(200,240,96,0.18);border-radius:100px;padding:3px 10px;font-size:11px;color:#a8d040;margin-bottom:10px}
+.avail-dot{width:5px;height:5px;border-radius:50%;background:var(--lime)}
+.skill-chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{background:rgba(240,237,232,0.05);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--ink3)}
+
+/* FLOATING ANIMATION */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.float1{animation:float 4s ease-in-out infinite}
+.float2{animation:float 4s ease-in-out infinite;animation-delay:1.4s}
+.float3{animation:float 4s ease-in-out infinite;animation-delay:2.8s}
+
+/* CONTAINER */
+.container{max-width:1100px;margin:0 auto;padding:0 40px}
+
+/* SECTIONS */
+.section-label{font-size:11px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px}
+.section-title{font-family:var(--font-head);font-size:clamp(28px,3vw,40px);font-weight:400;color:var(--ink);margin-bottom:36px;line-height:1.1}
+.section-div{height:1px;background:var(--border);margin:0 40px}
+
+.how-section{padding:64px 40px}
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.step-num{font-family:var(--font-head);font-size:44px;color:rgba(200,240,96,0.18);line-height:1;margin-bottom:16px}
+.step-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.step-desc{font-size:12px;color:var(--ink3);line-height:1.65;font-weight:300}
+
+.cat-section{padding:0 40px 64px}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:32px}
+.cat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all 0.2s}
+.cat-card:hover{border-color:var(--lime-bdr);background:var(--bg3)}
+.cat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:rgba(240,237,232,0.05);flex-shrink:0}
+.cat-name{font-size:12px;font-weight:500;color:var(--ink2)}
+
+.cta-band{margin:0 40px 40px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:44px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.cta-band h2{font-family:var(--font-head);font-size:32px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:6px}
+.cta-band p{font-size:13px;color:var(--ink3);font-weight:300}
+.cta-buttons{display:flex;gap:10px;flex-wrap:wrap}
+
+.footer{padding:28px 40px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:11px;color:var(--ink4)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:11px;color:var(--ink3);transition:color 0.2s}
+.footer-links a:hover{color:var(--ink)}
+
+/* AUTH PAGES */
+.auth-page{min-height:100vh;display:flex;flex-direction:column}
+.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;background:var(--bg)}
+.auth-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;width:100%;max-width:480px}
+.auth-box h1{font-family:var(--font-head);font-size:28px;font-weight:400;color:var(--ink);margin-bottom:4px}
+.auth-box .sub{font-size:13px;color:var(--ink3);margin-bottom:28px;font-weight:300}
+.auth-tabs{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:3px;margin-bottom:28px}
+.auth-tab{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:500;color:var(--ink3);cursor:pointer;border-radius:100px;border:none;background:transparent;transition:all 0.2s;font-family:var(--font-body)}
+.auth-tab.active{background:var(--lime);color:var(--bg)}
+
+/* FORM ELEMENTS */
+.form-group{margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:6px;letter-spacing:0.01em}
+input[type="text"],input[type="email"],input[type="password"],input[type="date"],input[type="tel"],select,textarea{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;font-size:13px;color:var(--ink);font-family:var(--font-body);transition:border-color 0.2s}
+input[type="date"]{-webkit-appearance:none;-moz-appearance:none;appearance:none;cursor:pointer;position:relative;z-index:1}
+input[type="date"]::-webkit-calendar-picker-indicator{cursor:pointer;opacity:0.7;filter:invert(1);padding:2px;margin-right:2px}
+input[type="date"]::-webkit-inner-spin-button{display:none}
+input[type="date"]::-webkit-datetime-edit{color:var(--ink)}
+input[type="date"]::-webkit-datetime-edit-fields-wrapper{color:var(--ink)}
+input[type="date"]::-webkit-datetime-edit-text{color:var(--ink3)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(200,240,96,0.4)}
+select option{background:var(--bg2);color:var(--ink)}
+textarea{resize:vertical;min-height:96px}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.checkbox-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);cursor:pointer}
+.checkbox-item input[type="checkbox"]{width:14px;height:14px;accent-color:var(--lime)}
+.form-submit{width:100%;padding:12px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-body);margin-top:8px;transition:all 0.2s}
+.form-submit:hover{background:#d4f575}
+.form-switch{text-align:center;margin-top:18px;font-size:12px;color:var(--ink3)}
+.form-switch a{color:var(--lime)}
+
+/* PROFILE */
+.profile-page{min-height:100vh}
+.profile-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 40px}
+.profile-header-inner{max-width:900px;margin:0 auto;display:flex;align-items:flex-start;gap:24px}
+.profile-avatar-lg{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:400;font-size:22px;color:var(--lime);background:#1a2e0a;border:1px solid rgba(200,240,96,0.2);flex-shrink:0}
+.profile-name{font-family:var(--font-head);font-size:28px;font-weight:400;color:var(--ink)}
+.profile-title{font-size:14px;color:var(--ink3);margin:4px 0 14px;font-weight:300}
+.profile-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:var(--bg);border:1px solid var(--border2);color:var(--ink2);padding:4px 12px;border-radius:100px;font-size:11px}
+.tag.green{background:var(--green-bg);color:#a8d040;border-color:rgba(200,240,96,0.18)}
+
+.profile-body{max-width:900px;margin:36px auto;padding:0 40px;display:grid;grid-template-columns:1fr 280px;gap:20px}
+.profile-card-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.profile-card-box h3{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);letter-spacing:0.02em}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(240,237,232,0.04);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-row span{color:var(--ink3)}
+.info-row strong{color:var(--ink)}
+.contact-btn{width:100%;padding:12px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all 0.2s}
+.contact-btn:hover{background:#d4f575}
+
+/* CALENDAR */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-header button{background:var(--bg);border:1px solid var(--border2);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--ink2)}
+.cal-header strong{font-size:13px;color:var(--ink);font-weight:500}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-day-name{text-align:center;font-size:10px;font-weight:500;color:var(--ink4);padding:4px 0;text-transform:uppercase;letter-spacing:0.05em}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:12px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;color:var(--ink3)}
+.cal-day:hover{background:var(--bg4);color:var(--ink)}
+.cal-day.available{background:var(--green-bg);color:#a8d040;border-color:rgba(200,240,96,0.18)}
+.cal-day.today{border-color:var(--lime);color:var(--lime)}
+.cal-day.empty{cursor:default}
+.cal-legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--ink3);align-items:center}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+
+/* SEARCH */
+.search-page{min-height:100vh}
+.search-hero{background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 40px;text-align:center}
+.search-hero h1{font-family:var(--font-head);font-size:36px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.search-hero p{color:var(--ink3);font-size:13px;margin-bottom:24px;font-weight:300}
+.search-bar{max-width:520px;margin:0 auto;display:flex;gap:8px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-pill);padding:6px 6px 6px 20px}
+.search-bar input{flex:1;border:none;background:transparent;font-size:13px;color:var(--ink);outline:none}
+.search-bar input::placeholder{color:var(--ink3)}
+.search-bar button{background:var(--lime);color:var(--bg);border:none;padding:9px 22px;border-radius:var(--radius-pill);font-weight:600;font-size:13px;cursor:pointer;font-family:var(--font-body)}
+
+.search-layout{display:grid;grid-template-columns:280px 1fr;gap:20px;max-width:1100px;margin:28px auto;padding:0 40px}
+.filters-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;height:fit-content;position:sticky;top:80px}
+.filters-panel h3{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:20px;letter-spacing:0.02em}
+.filter-group{margin-bottom:16px}
+.filter-group label{font-size:11px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px}
+.filter-group select,.filter-group input{font-size:12px;padding:8px 12px}
+.filter-btn{width:100%;padding:10px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);font-weight:600;font-size:13px;cursor:pointer;font-family:var(--font-body);margin-top:4px}
+.filter-reset{width:100%;padding:8px;background:none;color:var(--ink3);border:1px solid var(--border);border-radius:var(--radius-pill);font-size:12px;cursor:pointer;margin-top:6px;font-family:var(--font-body)}
+
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px}
+.results-header strong{color:var(--ink)}
+.results-header span{color:var(--ink3)}
+.worker-cards{display:flex;flex-direction:column;gap:10px}
+.worker-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;display:flex;align-items:center;gap:16px;transition:all 0.2s;cursor:pointer}
+.worker-card:hover{border-color:var(--lime-bdr);background:var(--bg3)}
+.wc-info{flex:1}
+.wc-info h4{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.wc-meta{font-size:12px;color:var(--ink3);margin-bottom:8px}
+.wc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.wc-tag{background:rgba(240,237,232,0.05);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-size:11px;color:var(--ink3)}
+.wc-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.avail-badge-sm{font-size:11px;color:#a8d040;font-weight:500;background:var(--green-bg);padding:3px 10px;border-radius:100px;border:1px solid rgba(200,240,96,0.18)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:440px;margin:16px;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:16px;cursor:pointer;color:var(--ink3)}
+.modal-box h2{font-family:var(--font-head);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:4px}
+.modal-box .sub{font-size:12px;color:var(--ink3);margin-bottom:20px}
+.success-msg{background:var(--green-bg);border:1px solid rgba(200,240,96,0.18);color:#a8d040;border-radius:10px;padding:14px;text-align:center;display:none;font-size:13px}
+
+/* ADMIN */
+.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.admin-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 16px;display:flex;flex-direction:column;gap:4px}
+.admin-sidebar .logo{color:var(--ink);font-size:14px;font-weight:600;margin-bottom:28px;display:block;padding:0 8px;letter-spacing:0.04em}
+.admin-sidebar .logo span{color:var(--lime)}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:var(--ink3);font-size:13px;cursor:pointer;transition:all 0.2s;border:none;background:none;width:100%;text-align:left;font-family:var(--font-body)}
+.sidebar-link:hover,.sidebar-link.active{background:rgba(240,237,232,0.06);color:var(--ink)}
+.sidebar-link.active{color:var(--lime)}
+.admin-main{background:var(--bg);padding:32px;overflow-y:auto}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.admin-topbar h1{font-family:var(--font-head);font-size:24px;font-weight:400;color:var(--ink)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.stat-card .sc-num{font-family:var(--font-head);font-size:32px;font-weight:400;color:var(--ink)}
+.stat-card .sc-label{font-size:11px;color:var(--ink3);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em}
+.stat-card .sc-change{font-size:11px;color:#a8d040;margin-top:6px}
+.admin-table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.admin-table-head{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--border)}
+.admin-table-head h3{font-size:13px;font-weight:500;color:var(--ink)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 20px;text-align:left;font-size:12px}
+th{color:var(--ink3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border)}
+tr:not(:last-child) td{border-bottom:1px solid rgba(240,237,232,0.04)}
+tr:hover td{background:rgba(240,237,232,0.02)}
+td{color:var(--ink2)}
+.status-pill{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
+.status-pill.active{background:var(--green-bg);color:#a8d040;border:1px solid rgba(200,240,96,0.18)}
+.status-pill.pending{background:#2a1f05;color:#d4a017;border:1px solid rgba(212,160,23,0.2)}
+.status-pill.inactive{background:#1f0505;color:#f06060;border:1px solid rgba(240,96,96,0.2)}
+
+/* AVAILABILITY */
+.avail-page{min-height:100vh}
+.avail-container{max-width:720px;margin:40px auto;padding:0 24px 60px}
+.avail-container h1{font-family:var(--font-head);font-size:28px;font-weight:400;color:var(--ink);margin-bottom:4px}
+.avail-container .sub{font-size:13px;color:var(--ink3);margin-bottom:32px;font-weight:300}
+.card-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px}
+.card-box h2{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:18px;letter-spacing:0.02em}
+.time-slot{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:border-color 0.2s}
+.time-slot:hover{border-color:var(--border2)}
+.time-slot label{flex:1;font-size:13px;color:var(--ink2);cursor:pointer}
+.time-slot input[type="checkbox"]{accent-color:var(--lime);width:16px;height:16px}
+.save-row{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
+
+/* SKILLS TAGS */
+.skill-tag{background:rgba(200,240,96,0.08);border:1px solid rgba(200,240,96,0.15);color:#a8d040;padding:4px 10px;border-radius:6px;font-size:12px}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hero-cards{display:none}
+  .search-layout{grid-template-columns:1fr}
+  .filters-panel{position:static}
+  .profile-body{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .admin-layout{grid-template-columns:1fr}
+  .admin-sidebar{display:none}
+  .steps-grid{grid-template-columns:1fr}
+  .cat-grid{grid-template-columns:repeat(2,1fr)}
+  .cta-band{flex-direction:column;text-align:center}
+  .cta-buttons{justify-content:center}
+}
+@media(max-width:640px){
+  .nav{padding:14px 20px}
+  .nav-links .btn-outline,.nav-links .btn-primary{display:none}
+  .nav-burger{display:block}
+  .hero{padding:48px 20px 40px}
+  .section-div,.how-section,.cat-section{padding-left:20px;padding-right:20px}
+  .cta-band{margin:0 20px 24px}
+  .footer{padding:24px 20px}
+  .form-row{grid-template-columns:1fr}
+  .container{padding:0 20px}
+}
+
+/* === LANGUAGE SWITCHER === */
+.lang-switcher{display:flex;align-items:center;gap:2px;background:rgba(240,237,232,0.06);border:1px solid var(--border);border-radius:var(--radius-pill);padding:3px}
+.lang-btn{background:none;border:none;color:var(--ink3);font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--radius-pill);cursor:pointer;font-family:var(--font-body);letter-spacing:0.05em;transition:all 0.2s}
+.lang-btn:hover{color:var(--ink)}
+.lang-btn.lang-active{background:var(--lime);color:var(--bg)}
+
+.page { display: none !important; }
+.page.active { display: block !important; }
+
+/* JOBCAT FILTER */
+
+/* Industry filter grid */
+.ind-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ind-filter-btn{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 6px;font-size:11px;color:var(--ink2);cursor:pointer;font-family:var(--font-body);display:flex;align-items:center;gap:6px;transition:all 0.2s;text-align:left;width:100%}
+.ind-filter-btn:hover{border-color:rgba(200,240,96,0.3);color:var(--ink)}
+.ind-filter-btn.active{background:rgba(200,240,96,0.12);border-color:rgba(200,240,96,0.45);color:var(--lime);font-weight:500}
+.ind-filter-btn span{font-size:10px;line-height:1.3}
+
+.jobcat-trigger{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;font-size:12px;color:var(--ink2);text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-body);transition:border-color 0.2s}
+.jobcat-trigger:hover{border-color:rgba(200,240,96,0.4)}
+.jobcat-arrow{font-size:10px;color:var(--ink3);transition:transform 0.2s;display:inline-block}
+.jobcat-arrow.open{transform:rotate(180deg)}
+.jobcat-panel{background:var(--bg);border:1px solid var(--border2);border-radius:12px;margin-top:6px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3)}
+.jobcat-info{font-size:11px;color:var(--ink3);padding:12px 14px 8px;line-height:1.6;border-bottom:1px solid var(--border)}
+.jobcat-search{width:100%;padding:10px 14px;background:var(--bg2);border:none;border-bottom:1px solid var(--border);font-size:12px;color:var(--ink);font-family:var(--font-body);outline:none}
+.jobcat-search::placeholder{color:var(--ink3)}
+.jobcat-list{max-height:260px;overflow-y:auto;padding:6px 0}
+.jobcat-item{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;cursor:pointer;transition:background 0.15s;font-size:12px;color:var(--ink2);line-height:1.4}
+.jobcat-item:hover{background:var(--bg3)}
+.jobcat-item input[type="checkbox"]{accent-color:var(--lime);width:15px;height:15px;flex-shrink:0;margin-top:1px;cursor:pointer}
+.jobcat-item input:checked+span{color:var(--lime);font-weight:500}
+.jobcat-footer{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--border);background:var(--bg2)}
+.jobcat-cancel{flex:1;padding:8px;background:transparent;border:1px solid var(--border2);border-radius:var(--radius-pill);font-size:12px;color:var(--ink2);cursor:pointer;font-family:var(--font-body);transition:all 0.2s}
+.jobcat-cancel:hover{border-color:rgba(240,237,232,0.38);color:var(--ink)}
+.jobcat-add{flex:2;padding:8px;background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:background 0.2s}
+.jobcat-add:hover{background:#d4f575}
+.jobcat-selected-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.jobcat-tag{background:rgba(200,240,96,0.1);border:1px solid rgba(200,240,96,0.25);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+.jobcat-tag button{background:none;border:none;color:var(--lime);cursor:pointer;font-size:11px;padding:0;line-height:1}
+
+  </style>
+</head>
+<body>
+
+<!-- ===== PAGE: home ===== -->
+<div class="page active" id="page-home">
+<nav class="nav">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <div class="nav-links">
+      <a onclick="goTo('search');return false;" href='#' class="btn-outline" data-i18n="nav_search">Hae työntekijöitä</a>
+      <a onclick="goTo('worker-reg');return false;" href='#' class="btn-outline" data-i18n="nav_worker">Olen työntekijä</a>
+      <a onclick="goTo('employer-reg');return false;" href='#' class="btn-primary" data-i18n="nav_employer">Olen työnantaja</a>
+      <div class="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+    <button class="nav-burger" id="burger">☰</button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow"><span class="blink-dot"></span><span data-i18n="hero_badge">Suomen johtava osa-aikatyöalusta</span></div>
+    <h1><span data-i18n="hero_h1_1">Löydä sijainen.</span><br/><em data-i18n="hero_h1_2">Tänään.</em></h1>
+    <p class="hero-sub" data-i18n="hero_sub">Yli 1 200 osa-aikatyöntekijää...</p>
+    <div class="hero-cta">
+      <a onclick="goTo('search');return false;" href='#' class="btn-primary large" data-i18n="hero_cta1">Hae työntekijöitä →</a>
+      <a onclick="goTo('worker-reg');return false;" href='#' class="btn-outline large" data-i18n="hero_cta2">Ilmoita saatavuutesi</a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="stat-num">1 240</span><span class="stat-lbl" data-i18n="stat_workers">Työntekijää</span></div>
+      <div class="stat-div"></div>
+      <div><span class="stat-num">380</span><span class="stat-lbl" data-i18n="stat_employers">Työnantajaa</span></div>
+      <div class="stat-div"></div>
+      <div><span class="stat-num">47</span><span class="stat-lbl" data-i18n="stat_cities">Kaupunkia</span></div>
+    </div>
+    <div class="hero-cards">
+      <div class="wcard-float float1">
+        <div class="wcard-top"><div class="avatar av-lime">AM</div><div><div class="wcard-name">Anna Mäkinen</div><div class="wcard-role" data-i18n-html="worker_card_1_role">Sairaanhoitaja · Helsinki</div></div></div>
+        <div class="avail-badge"><span class="avail-dot"></span><span data-i18n="avail_today">Saatavilla tänään</span></div>
+        <div class="skill-chips"><span class="chip">Akuuttihoito</span><span class="chip">FI · EN</span></div>
+      </div>
+      <div class="wcard-float float2">
+        <div class="wcard-top"><div class="avatar av-blue">JK</div><div><div class="wcard-name">Juho Korhonen</div><div class="wcard-role">Luokanopettaja · Tampere</div></div></div>
+        <div class="avail-badge"><span class="avail-dot"></span>pe–su / Fri–Sun</div>
+        <div class="skill-chips"><span class="chip">Alakoulu</span><span class="chip">FI · SV</span></div>
+      </div>
+      <div class="wcard-float float3">
+        <div class="wcard-top"><div class="avatar av-pink">LV</div><div><div class="wcard-name">Laura Virtanen</div><div class="wcard-role">Myyjä · Turku</div></div></div>
+        <div class="avail-badge"><span class="avail-dot"></span><span data-i18n="avail_today">Saatavilla tänään</span></div>
+        <div class="skill-chips"><span class="chip">Myynti</span><span class="chip">FI · EN · RU</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-div"></div>
+
+  <section class="how-section">
+    <div class="container">
+      <div class="section-label" data-i18n="how_label">Miten se toimii</div>
+      <div class="section-title" data-i18n="how_title">Kolme askelta riittää</div>
+      <div class="steps-grid">
+        <div class="step-card"><div class="step-num">01</div><div class="step-title" data-i18n="step1_title">Rekisteröidy</div><div class="step-desc" data-i18n="step1_desc">Luo profiili muutamassa minuutissa.</div></div>
+        <div class="step-card"><div class="step-num">02</div><div class="step-title" data-i18n="step2_title">Merkitse saatavuus</div><div class="step-desc" data-i18n="step2_desc">Valitse kalenterista vapaat päivät.</div></div>
+        <div class="step-card"><div class="step-num">03</div><div class="step-title" data-i18n="step3_title">Tule löydetyksi</div><div class="step-desc" data-i18n="step3_desc">Työnantajat löytävät sinut hakufilttereillä.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-div"></div>
+
+  <section class="cat-section" style="padding-top:64px">
+    <div class="container">
+      <div class="section-label" data-i18n="cat_label">Toimialat</div>
+      <div class="section-title" data-i18n="cat_title">Kaikki alat yhdessä</div>
+      <div class="cat-grid">
+        <div class="cat-card"><div class="cat-icon">🏥</div><span class="cat-name" data-i18n="cat_health">Terveydenhuolto</span></div>
+        <div class="cat-card"><div class="cat-icon">📚</div><span class="cat-name" data-i18n="cat_edu">Opetus & Kasvatus</span></div>
+        <div class="cat-card"><div class="cat-icon">🛒</div><span class="cat-name" data-i18n="cat_retail">Kauppa & Myynti</span></div>
+        <div class="cat-card"><div class="cat-icon">🍽️</div><span class="cat-name" data-i18n="cat_food">Ravintola & Catering</span></div>
+        <div class="cat-card"><div class="cat-icon">🏗️</div><span class="cat-name" data-i18n="cat_build">Rakennus & Tekniikka</span></div>
+        <div class="cat-card"><div class="cat-icon">💼</div><span class="cat-name" data-i18n="cat_office">Toimistotyö</span></div>
+        <div class="cat-card"><div class="cat-icon">🚛</div><span class="cat-name" data-i18n="cat_logistics">Logistiikka</span></div>
+        <div class="cat-card"><div class="cat-icon">🧹</div><span class="cat-name" data-i18n="cat_clean">Siivous & Huolto</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div style="height:64px"></div>
+
+  <div class="cta-band">
+    <div>
+      <h2 data-i18n="cta_title">Valmis aloittamaan?</h2>
+      <p data-i18n="cta_sub">Rekisteröityminen on ilmaista ja kestää alle 3 minuuttia.</p>
+    </div>
+    <div class="cta-buttons">
+      <a onclick="goTo('worker-reg');return false;" href='#' class="btn-primary large" data-i18n="cta_btn1">Rekisteröidy työntekijänä</a>
+      <a onclick="goTo('employer-reg');return false;" href='#' class="btn-outline large" data-i18n="cta_btn2">Rekisteröidy työnantajana</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <span class="footer-copy" data-i18n="footer_copy">© 2026 Lisaduuni.com</span>
+    <div class="footer-links">
+      <a onclick="goTo('search');return false;" href='#' data-i18n="footer_search">Hae työntekijöitä</a>
+      <a href="#" data-i18n="footer_privacy">Tietosuoja</a>
+      <a href="#" data-i18n="footer_terms">Käyttöehdot</a>
+      <a onclick="goTo('admin');return false;" href='#' data-i18n="footer_admin">Admin</a>
+    </div>
+  </footer>
+</div>
+
+<!-- ===== PAGE: search ===== -->
+<div class="page" id="page-search">
+<nav class="nav">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <div class="nav-links">
+      <a onclick="goTo('worker-reg');return false;" href='#' class="btn-outline" data-i18n="nav_worker">Olen työntekijä</a>
+      <a onclick="goTo('employer-reg');return false;" href='#' class="btn-primary" data-i18n="nav_login_employer">Kirjaudu työnantajana</a>
+      <div class="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="search-hero">
+    <h1 data-i18n="search_title">Löydä oikea henkilö</h1>
+    <p data-i18n="search_sub">Yli 1 200 saatavilla olevaa osa-aikatyöntekijää ja sijaista</p>
+    <div class="search-bar">
+      <input type="text" id="searchInput" data-i18n="search_placeholder" data-i18n-attr="placeholder" placeholder="Hae nimellä..."/>
+      <button onclick="filterWorkers()" data-i18n="search_btn">Hae</button>
+    </div>
+  </div>
+
+  <div class="search-layout">
+    <div class="filters-panel">
+      <h3 data-i18n="filter_title">Rajaa hakua</h3>
+
+      <!-- CITY -->
+      <div class="filter-group">
+        <label data-i18n="filter_city">Kaupunki</label>
+        <select id="fCity">
+          <option value="" data-i18n="filter_all_cities">Kaikki</option>
+          <option>Helsinki</option><option>Espoo</option><option>Tampere</option>
+          <option>Vantaa</option><option>Oulu</option><option>Turku</option>
+          <option>Lahti</option><option>Kuopio</option><option>Kouvola</option>
+        </select>
+      </div>
+
+      <!-- INDUSTRY CARDS (Picture 1) -->
+      <div class="filter-group">
+        <label data-i18n="filter_industry" style="display:block;font-size:11px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Toimiala</label>
+        <div class="ind-filter-grid" id="indFilterGrid">
+          <button class="ind-filter-btn" data-ind="Terveydenhuolto" onclick="toggleInd(this)">🏥 <span>Terveydenhuolto</span></button>
+          <button class="ind-filter-btn" data-ind="Opetus" onclick="toggleInd(this)">📚 <span>Opetus</span></button>
+          <button class="ind-filter-btn" data-ind="Kauppa" onclick="toggleInd(this)">🛒 <span>Kauppa & Myynti</span></button>
+          <button class="ind-filter-btn" data-ind="Ravintola" onclick="toggleInd(this)">🍽️ <span>Ravintola</span></button>
+          <button class="ind-filter-btn" data-ind="Rakennus" onclick="toggleInd(this)">🏗️ <span>Rakennus</span></button>
+          <button class="ind-filter-btn" data-ind="Toimisto" onclick="toggleInd(this)">💼 <span>Toimisto</span></button>
+          <button class="ind-filter-btn" data-ind="Logistiikka" onclick="toggleInd(this)">🚛 <span>Logistiikka</span></button>
+          <button class="ind-filter-btn" data-ind="Siivous" onclick="toggleInd(this)">🧹 <span>Siivous</span></button>
+        </div>
+      </div>
+
+      <!-- OCCUPATION GROUP CHECKBOXES (Picture 2) -->
+      <div class="filter-group">
+        <label style="display:block;font-size:11px;font-weight:500;color:var(--ink4);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px">Ammattiryhmä</label>
+        <button class="jobcat-trigger" id="jobcatTrigger" onclick="toggleJobcat()">
+          <span id="jobcatLabel">Kaikki ammattiryhmät</span>
+          <span class="jobcat-arrow" id="jobcatArrow">▾</span>
+        </button>
+        <div class="jobcat-panel" id="jobcatPanel" style="display:none">
+          <p class="jobcat-info">Voit valita yhden tai useamman ammattiryhmän listasta.</p>
+          <input class="jobcat-search" type="text" id="jobcatSearch" placeholder="Suodata vaihtoehtoja..." oninput="filterJobcatList()"/>
+          <div class="jobcat-list" id="jobcatList">
+            <label class="jobcat-item"><input type="checkbox" value="Erityisasiantuntijat" onchange="updateJobcatSel()"/><span>Erityisasiantuntijat</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Asiantuntijat" onchange="updateJobcatSel()"/><span>Asiantuntijat</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Toimisto- ja asiakaspalvelutyöntekijät" onchange="updateJobcatSel()"/><span>Toimisto- ja asiakaspalvelutyöntekijät</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Palvelu- ja myyntityöntekijät" onchange="updateJobcatSel()"/><span>Palvelu- ja myyntityöntekijät</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Maanviljelijät, metsätyöntekijät ym." onchange="updateJobcatSel()"/><span>Maanviljelijät, metsätyöntekijät ym.</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Rakennus-, korjaus- ja valmistustyöntekijät" onchange="updateJobcatSel()"/><span>Rakennus-, korjaus- ja valmistustyöntekijät</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Prosessi- ja kuljetustyöntekijät" onchange="updateJobcatSel()"/><span>Prosessi- ja kuljetustyöntekijät</span></label>
+            <label class="jobcat-item"><input type="checkbox" value="Muut työntekijät" onchange="updateJobcatSel()"/><span>Muut työntekijät</span></label>
+          </div>
+          <div class="jobcat-footer">
+            <button class="jobcat-cancel" onclick="cancelJobcat()">Peruuta</button>
+            <button class="jobcat-add" onclick="applyJobcat()">Lisää hakuehdoksi</button>
+          </div>
+        </div>
+        <div class="jobcat-selected-tags" id="jobcatTags"></div>
+      </div>
+
+      <!-- LANGUAGE -->
+      <div class="filter-group">
+        <label data-i18n="filter_lang">Kieli</label>
+        <select id="fLang">
+          <option value="" data-i18n="filter_all_lang">Kaikki</option>
+          <option value="FI" data-i18n="lang_fi">Suomi</option>
+          <option value="SV" data-i18n="lang_sv">Ruotsi</option>
+          <option value="EN" data-i18n="lang_en">Englanti</option>
+          <option value="RU" data-i18n="lang_ru">Venäjä</option>
+          <option value="ET" data-i18n="lang_et">Viro</option>
+        </select>
+      </div>
+
+      <!-- WORK TYPE -->
+      <div class="filter-group">
+        <label data-i18n="filter_type">Työn tyyppi</label>
+        <select id="fType">
+          <option value="" data-i18n="filter_all_types">Kaikki</option>
+          <option data-i18n="wt_sub">Sijainen</option>
+          <option data-i18n="wt_part">Osa-aikainen</option>
+          <option data-i18n="wt_gig">Keikkatyö</option>
+          <option data-i18n="wt_remote">Etätyö</option>
+        </select>
+      </div>
+
+      <!-- DATE -->
+      <div class="filter-group">
+        <label data-i18n="filter_date">Saatavilla alkaen</label>
+        <input type="date" id="fDate"/>
+      </div>
+
+      <button class="filter-btn" onclick="filterWorkers()" data-i18n="filter_btn">Hae nyt</button>
+      <button class="filter-reset" onclick="resetFilters()" data-i18n="filter_reset">Tyhjennä</button>
+    </div>
+
+    <div>
+      <div class="results-header">
+        <strong id="resCount"></strong>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span data-i18n="results_sort" style="font-size:12px;color:var(--ink3)">Saatavuus ensin</span>
+          <div style="display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+            <button id="listViewBtn" onclick="switchView('list')" style="padding:5px 10px;background:var(--lime);color:var(--bg);border:none;font-size:11px;cursor:pointer;font-family:var(--font-body);font-weight:600">☰ Lista</button>
+            <button id="mapViewBtn" onclick="goTo('mapview')" style="padding:5px 10px;background:transparent;color:var(--ink3);border:none;font-size:11px;cursor:pointer;font-family:var(--font-body)">🗺 Kartta</button>
+          </div>
+        </div>
+      </div>
+      <div id="listView"><div class="worker-cards" id="workerCards"></div></div>
+      <div id="mapView" style="display:none"><div id="mapContainer" style="height:520px;border-radius:14px;overflow:hidden;border:1px solid var(--border)"></div></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="searchModal">
+    <div class="modal-box">
+      <button class="modal-close" id="searchModalClose">✕</button>
+      <h2 data-i18n="modal_title">Lähetä viesti</h2>
+      <p class="sub" id="modalTarget"></p>
+      <form id="searchContactForm">
+        <div class="form-group"><label data-i18n="lbl_modal_company">Yrityksen nimi *</label><input type="text" data-i18n="ph_modal_company" data-i18n-attr="placeholder" placeholder="Yritys Oy" required/></div>
+        <div class="form-group"><label data-i18n="lbl_modal_email">Sähköpostisi *</label><input type="email" data-i18n="ph_modal_email" data-i18n-attr="placeholder" placeholder="hr@yritys.fi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_modal_period">Ajanjakso</label><input type="text" data-i18n="ph_modal_period" data-i18n-attr="placeholder" placeholder="esim. 5.–9.5.2026"/></div>
+        <div class="form-group"><label data-i18n="lbl_modal_msg">Viesti *</label><textarea data-i18n="ph_modal_msg" data-i18n-attr="placeholder" required></textarea></div>
+        <button type="submit" class="form-submit" data-i18n="modal_send">Lähetä viesti →</button>
+      </form>
+      <div class="success-msg" id="searchOkMsg" data-i18n="modal_success">✅ Viesti lähetetty!</div>
+    </div>
+  </div>
+
+  
+  
+
+
+</div>
+
+<!-- ===== PAGE: worker-reg ===== -->
+<div class="page" id="page-worker-reg">
+<nav class="nav">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <div class="nav-links">
+      <a onclick="goTo('search');return false;" href='#' class="btn-outline" data-i18n="nav_search">Hae työntekijöitä</a>
+      <a onclick="goTo('employer-reg');return false;" href='#' class="btn-primary" data-i18n="nav_employer">Olen työnantaja</a>
+      <div class="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </nav>
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <h1 data-i18n="worker_reg_title">Rekisteröidy Lisaduuni.comiin</h1>
+      <p class="sub" data-i18n="worker_reg_sub">Ilmoita saatavuutesi ja tule löydetyksi työnantajille</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="wTabR" data-i18n="tab_register">Rekisteröidy</button>
+        <button class="auth-tab" id="wTabL" data-i18n="tab_login">Kirjaudu sisään</button>
+      </div>
+      <form id="wRegForm">
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="lbl_firstname">Etunimi *</label><input type="text" data-i18n="ph_firstname" data-i18n-attr="placeholder" placeholder="Anna" required/></div>
+          <div class="form-group"><label data-i18n="lbl_lastname">Sukunimi *</label><input type="text" data-i18n="ph_lastname" data-i18n-attr="placeholder" placeholder="Mäkinen" required/></div>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_email">Sähköposti *</label><input type="email" data-i18n="ph_email_worker" data-i18n-attr="placeholder" placeholder="anna@email.fi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_phone">Puhelin</label><input type="tel" data-i18n="ph_phone_worker" data-i18n-attr="placeholder" placeholder="+358 40 123 4567"/></div>
+        <div class="form-group"><label data-i18n="lbl_city">Kaupunki *</label>
+          <select required>
+            <option value="" data-i18n="ph_city">Valitse kaupunki</option>
+            <option>Helsinki</option><option>Espoo</option><option>Tampere</option><option>Vantaa</option><option>Oulu</option><option>Turku</option><option>Jyväskylä</option><option>Lahti</option><option>Kuopio</option><option>Pori</option><option>Kouvola</option><option>Joensuu</option>
+          </select>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_title">Ammattinimike *</label><input type="text" data-i18n="ph_title" data-i18n-attr="placeholder" placeholder="esim. Sairaanhoitaja" required/></div>
+        <div class="form-group"><label data-i18n="lbl_industry">Ammattiryhmä *</label>
+          <select required>
+            <option value="" data-i18n="ind_all">Valitse ammattiryhmä</option>
+            <option data-i18n="ind_expert">Erityisasiantuntijat</option>
+            <option data-i18n="ind_specialist">Asiantuntijat</option>
+            <option data-i18n="ind_office">Toimisto- ja asiakaspalvelutyöntekijät</option>
+            <option data-i18n="ind_service">Palvelu- ja myyntityöntekijät</option>
+            <option data-i18n="ind_farm">Maanviljelijät, metsätyöntekijät ym.</option>
+            <option data-i18n="ind_build">Rakennus-, korjaus- ja valmistustyöntekijät</option>
+            <option data-i18n="ind_process">Prosessi- ja kuljetustyöntekijät</option>
+            <option data-i18n="ind_other">Muut työntekijät</option>
+          </select>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_languages">Kielet</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" checked/> <span data-i18n="lang_fi">Suomi</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="lang_sv">Ruotsi</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="lang_en">Englanti</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="lang_ru">Venäjä</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="lang_et">Viro</span></label>
+          </div>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_worktype">Työn tyyppi</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" checked/> <span data-i18n="wt_sub">Sijainen</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="wt_part">Osa-aikainen</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="wt_gig">Keikkatyö</span></label>
+            <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="wt_remote">Etätyö</span></label>
+          </div>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_bio">Lyhyt esittely</label><textarea data-i18n="ph_bio" data-i18n-attr="placeholder" placeholder="Kerro itsestäsi..."></textarea></div>
+        <div class="form-group"><label data-i18n="lbl_password">Salasana *</label><input type="password" data-i18n="ph_password" data-i18n-attr="placeholder" placeholder="Vähintään 8 merkkiä" required/></div>
+        <button type="submit" class="form-submit" data-i18n="register_btn">Luo tili →</button>
+        <p class="form-switch"><span data-i18n="switch_to_login">Onko sinulla jo tili?</span> <a href="#" id="wToLogin" data-i18n="switch_login_link">Kirjaudu sisään</a></p>
+      </form>
+      <form id="wLoginForm" style="display:none">
+        <div class="form-group"><label data-i18n="lbl_email">Sähköposti *</label><input type="email" data-i18n="ph_email_worker" data-i18n-attr="placeholder" placeholder="anna@email.fi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_password">Salasana *</label><input type="password" placeholder="••••••••" required/></div>
+        <button type="submit" class="form-submit" data-i18n="login_btn">Kirjaudu sisään →</button>
+        <p class="form-switch"><span data-i18n="switch_to_reg">Ei tiliä?</span> <a href="#" id="wToReg" data-i18n="switch_reg_link">Rekisteröidy ilmaiseksi</a></p>
+      </form>
+    </div>
+  </div>
+  
+  
+</div>
+
+<!-- ===== PAGE: employer-reg ===== -->
+<div class="page" id="page-employer-reg">
+<nav class="nav">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <div class="nav-links">
+      <a onclick="goTo('search');return false;" href='#' class="btn-outline" data-i18n="nav_search">Hae työntekijöitä</a>
+      <a onclick="goTo('worker-reg');return false;" href='#' class="btn-outline" data-i18n="nav_worker">Olen työntekijä</a>
+      <div class="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </nav>
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <h1 data-i18n="employer_reg_title">Rekisteröidy työnantajana</h1>
+      <p class="sub" data-i18n="employer_reg_sub">Löydä sijainen tai osa-aikatyöntekijä nopeasti</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="eTabR" data-i18n="tab_register">Rekisteröidy</button>
+        <button class="auth-tab" id="eTabL" data-i18n="tab_login">Kirjaudu sisään</button>
+      </div>
+      <form id="eRegForm">
+        <div class="form-group"><label data-i18n="lbl_company">Yrityksen nimi *</label><input type="text" data-i18n="ph_company" data-i18n-attr="placeholder" placeholder="Yritys Oy" required/></div>
+        <div class="form-row">
+          <div class="form-group"><label data-i18n="lbl_ytunnus">Y-tunnus *</label><input type="text" data-i18n="ph_ytunnus" data-i18n-attr="placeholder" placeholder="1234567-8" required/></div>
+          <div class="form-group"><label data-i18n="lbl_industry">Toimiala *</label>
+            <select required>
+              <option value="" data-i18n="ind_all">Valitse ammattiryhmä</option>
+              <option data-i18n="ind_expert">Erityisasiantuntijat</option>
+              <option data-i18n="ind_specialist">Asiantuntijat</option>
+              <option data-i18n="ind_office">Toimisto- ja asiakaspalvelutyöntekijät</option>
+              <option data-i18n="ind_service">Palvelu- ja myyntityöntekijät</option>
+              <option data-i18n="ind_farm">Maanviljelijät, metsätyöntekijät ym.</option>
+              <option data-i18n="ind_build">Rakennus-, korjaus- ja valmistustyöntekijät</option>
+              <option data-i18n="ind_process">Prosessi- ja kuljetustyöntekijät</option>
+              <option data-i18n="ind_other">Muut työntekijät</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_city">Kaupunki *</label>
+          <select required>
+            <option value="" data-i18n="ph_city">Valitse kaupunki</option>
+            <option>Helsinki</option><option>Espoo</option><option>Tampere</option><option>Vantaa</option><option>Oulu</option><option>Turku</option><option>Jyväskylä</option><option>Lahti</option>
+          </select>
+        </div>
+        <div class="form-group"><label data-i18n="lbl_contact">Yhteyshenkilö *</label><input type="text" data-i18n="ph_contact" data-i18n-attr="placeholder" placeholder="Etunimi Sukunimi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_email">Sähköposti *</label><input type="email" data-i18n="ph_email_employer" data-i18n-attr="placeholder" placeholder="hr@yritys.fi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_phone">Puhelin</label><input type="tel" data-i18n="ph_phone_employer" data-i18n-attr="placeholder" placeholder="+358 9 123 4567"/></div>
+        <div class="form-group"><label data-i18n="lbl_company_desc">Yrityksen kuvaus</label><textarea data-i18n="ph_company_desc" data-i18n-attr="placeholder" placeholder="Kerro yrityksestänne..."></textarea></div>
+        <div class="form-group"><label data-i18n="lbl_password">Salasana *</label><input type="password" data-i18n="ph_password" data-i18n-attr="placeholder" placeholder="Vähintään 8 merkkiä" required/></div>
+        <button type="submit" class="form-submit" data-i18n="employer_reg_btn">Luo työnantajatili →</button>
+        <p class="form-switch"><span data-i18n="switch_to_login">Onko sinulla jo tili?</span> <a href="#" id="eToLogin" data-i18n="switch_login_link">Kirjaudu sisään</a></p>
+      </form>
+      <form id="eLoginForm" style="display:none">
+        <div class="form-group"><label data-i18n="lbl_email">Sähköposti *</label><input type="email" data-i18n="ph_email_employer" data-i18n-attr="placeholder" placeholder="hr@yritys.fi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_password">Salasana *</label><input type="password" placeholder="••••••••" required/></div>
+        <button type="submit" class="form-submit" data-i18n="login_btn">Kirjaudu sisään →</button>
+        <p class="form-switch"><span data-i18n="switch_to_reg">Ei tiliä?</span> <a href="#" id="eToReg" data-i18n="switch_reg_link">Rekisteröidy ilmaiseksi</a></p>
+      </form>
+    </div>
+  </div>
+  
+  
+</div>
+
+<!-- ===== PAGE: profile ===== -->
+<div class="page" id="page-profile">
+<nav class="nav">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <div class="nav-links">
+      <a onclick="goTo('search');return false;" href='#' class="btn-outline" data-i18n="nav_back_search">← Takaisin hakuun</a>
+      <a onclick="goTo('availability');return false;" href='#' class="btn-outline" data-i18n="nav_edit_avail">Muokkaa saatavuutta</a>
+      <div class="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </nav>
+  <div class="profile-header">
+    <div class="profile-header-inner">
+      <div class="profile-avatar-lg">AM</div>
+      <div>
+        <div class="profile-name">Anna Mäkinen</div>
+        <div class="profile-title" id="profileTitle">Sairaanhoitaja · Helsinki</div>
+        <div class="profile-tags">
+          <span class="tag green" data-i18n="avail_today">Saatavilla tänään</span>
+          <span class="tag" data-i18n="avail_tag_health">Terveydenhuolto</span>
+          <span class="tag">🇫🇮 FI</span><span class="tag">🇬🇧 EN</span>
+          <span class="tag" data-i18n="wt_sub">Sijainen</span>
+          <span class="tag" data-i18n="wt_gig">Keikkatyö</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="profile-body">
+    <div>
+      <div class="profile-card-box">
+        <h3 data-i18n="profile_intro">Esittely</h3>
+        <p id="profileBio" style="color:var(--ink2);font-size:13px;line-height:1.75;font-weight:300"></p>
+      </div>
+      <div class="profile-card-box">
+        <h3 id="calHeading" data-i18n="profile_calendar">Saatavuuskalenteri</h3>
+        <div class="cal-header">
+          <button id="prevM">‹</button>
+          <strong id="calTitle"></strong>
+          <button id="nextM">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend" style="margin-top:10px">
+          <div class="legend-dot" style="background:var(--green-bg);border:1px solid rgba(200,240,96,0.18)"></div>
+          <span data-i18n="avail_yes">Saatavilla</span>
+        </div>
+      </div>
+      <div class="profile-card-box">
+        <h3 data-i18n="profile_skills">Taidot & Osaaminen</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span class="skill-tag">Akuuttihoito / Acute care</span>
+          <span class="skill-tag">Sisätaudit / Internal medicine</span>
+          <span class="skill-tag">Lääkehoito / Medication</span>
+          <span class="skill-tag">Tiimityö / Teamwork</span>
+          <span class="skill-tag">Potilasturvallisuus / Patient safety</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="profile-card-box">
+        <h3 data-i18n="profile_info">Perustiedot</h3>
+        <div class="info-row"><span data-i18n="info_city">Kaupunki</span><strong>Helsinki</strong></div>
+        <div class="info-row"><span data-i18n="info_industry">Toimiala</span><strong id="industryVal">Terveydenhuolto</strong></div>
+        <div class="info-row"><span data-i18n="info_type">Työn tyyppi</span><strong id="typeVal">Sijainen, Keikkatyö</strong></div>
+        <div class="info-row"><span data-i18n="info_langs">Kielet</span><strong>FI, EN</strong></div>
+        <div class="info-row"><span data-i18n="info_exp">Kokemus</span><strong id="expVal">8 vuotta</strong></div>
+        <div style="margin-top:16px"><button class="contact-btn" id="openModal" data-i18n="profile_contact_btn">✉️ Lähetä viesti</button></div>
+        <p style="text-align:center;font-size:11px;color:var(--ink3);margin-top:10px" data-i18n="profile_updated">Päivitetty 27.4.2026</p>
+      </div>
+      <div class="profile-card-box">
+        <h3 data-i18n="profile_week">Tällä viikolla</h3>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px" id="weekView"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal-box">
+      <button class="modal-close" id="closeModal">✕</button>
+      <h2 data-i18n="contact_modal_title">Lähetä viesti</h2>
+      <p class="sub" data-i18n="contact_modal_sub">Ota yhteyttä Anna Mäkiseen</p>
+      <form id="contactForm">
+        <div class="form-group"><label data-i18n="lbl_modal_company">Yrityksen nimi *</label><input type="text" data-i18n="ph_modal_company" data-i18n-attr="placeholder" required/></div>
+        <div class="form-group"><label data-i18n="lbl_modal_email">Sähköpostisi *</label><input type="email" data-i18n="ph_modal_email" data-i18n-attr="placeholder" required/></div>
+        <div class="form-group"><label data-i18n="lbl_modal_period">Ajanjakso</label><input type="text" data-i18n="ph_modal_period" data-i18n-attr="placeholder"/></div>
+        <div class="form-group"><label data-i18n="lbl_modal_msg">Viesti *</label><textarea data-i18n="ph_modal_msg" data-i18n-attr="placeholder" required></textarea></div>
+        <button type="submit" class="form-submit" data-i18n="modal_send">Lähetä viesti →</button>
+      </form>
+      <div class="success-msg" id="okMsg" data-i18n="contact_success">✅ Viesti lähetetty!</div>
+    </div>
+  </div>
+
+  
+  
+</div>
+
+<!-- ===== PAGE: availability ===== -->
+<div class="page" id="page-availability">
+<nav class="nav">
+    <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
+    <div class="nav-links">
+      <a onclick="goTo('profile');return false;" href='#' class="btn-outline" data-i18n="nav_back_profile">← Takaisin profiiliin</a>
+      <div class="lang-switcher">
+        <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+        <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </nav>
+  <div class="avail-container">
+    <h1 data-i18n="avail_page_title">Merkitse saatavuutesi</h1>
+    <p class="sub" data-i18n="avail_page_sub">Valitse kalenterista päivät jolloin olet saatavilla.</p>
+
+    <div class="card-box">
+      <h2 data-i18n="avail_cal_title">Saatavuuskalenteri</h2>
+      <div class="cal-header">
+        <button id="avPrev">‹</button>
+        <strong id="avCalTitle"></strong>
+        <button id="avNext">›</button>
+      </div>
+      <div class="cal-grid" id="avCalGrid"></div>
+      <div class="cal-legend" style="margin-top:10px">
+        <div class="legend-dot" style="background:var(--green-bg);border:1px solid rgba(200,240,96,0.2)"></div>
+        <span data-i18n="avail_yes">Saatavilla</span> · <span data-i18n="selected_days" id="selLabel">päivää</span>: <strong id="selCount">0</strong>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h2 data-i18n="avail_shifts">Tyypilliset työvuorot</h2>
+      <div class="time-slot"><input type="checkbox" id="s1" checked/><label for="s1" data-i18n="shift_morning">Aamuvuoro (06:00–14:00)</label></div>
+      <div class="time-slot"><input type="checkbox" id="s2"/><label for="s2" data-i18n="shift_evening">Iltavuoro (14:00–22:00)</label></div>
+      <div class="time-slot"><input type="checkbox" id="s3"/><label for="s3" data-i18n="shift_night">Yövuoro (22:00–06:00)</label></div>
+      <div class="time-slot"><input type="checkbox" id="s4" checked/><label for="s4" data-i18n="shift_full">Kokopäiväinen (08:00–16:00)</label></div>
+      <div class="time-slot"><input type="checkbox" id="s5"/><label for="s5" data-i18n="shift_part">Osa-aikainen (vapaa aika)</label></div>
+    </div>
+
+    <div class="card-box">
+      <h2 data-i18n="avail_area">Työskentelyalue</h2>
+      <div class="form-group">
+        <label data-i18n="avail_primary_city">Ensisijainen kaupunki</label>
+        <select><option>Helsinki</option><option>Espoo</option><option>Vantaa</option><option>Tampere</option><option>Turku</option><option>Oulu</option></select>
+      </div>
+      <div class="form-group">
+        <label data-i18n="avail_remote_q">Etätyö mahdollinen?</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" checked/> <span data-i18n="avail_remote_yes">Kyllä</span></label>
+          <label class="checkbox-item"><input type="checkbox"/> <span data-i18n="avail_remote_no">Ei</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-box">
+      <h2 data-i18n="avail_notes">Lisätietoja työnantajille</h2>
+      <div class="form-group"><label data-i18n="avail_msg_lbl">Viesti työnantajille</label><textarea data-i18n="avail_msg_ph" data-i18n-attr="placeholder"></textarea></div>
+      <div class="form-group"><label data-i18n="avail_wage_lbl">Palkkatoive (€/h)</label><input type="text" data-i18n="avail_wage_ph" data-i18n-attr="placeholder"/></div>
+    </div>
+
+    <div class="save-row">
+      <a onclick="goTo('profile');return false;" href='#' class="btn-outline" data-i18n="avail_cancel">Peruuta</a>
+      <button class="btn-primary large" id="saveBtn" data-i18n="avail_save">Tallenna saatavuus ✓</button>
+    </div>
+    <div id="savedMsg" style="display:none;background:var(--green-bg);border:1px solid rgba(200,240,96,0.18);color:#a8d040;border-radius:10px;padding:14px;text-align:center;margin-top:14px;font-size:13px" data-i18n="avail_saved">✅ Tallennettu!</div>
+  </div>
+
+  
+  
+</div>
+
+<!-- ===== PAGE: admin ===== -->
+<div class="page" id="page-admin">
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <a onclick="goTo('home');return false;" href='#' class="logo">Lisaduuni<span>.com</span></a>
+    <button class="sidebar-link active" onclick="showTab('overview')">📊 <span data-i18n="admin_overview">Yleiskatsaus</span></button>
+    <button class="sidebar-link" onclick="showTab('workers')">👷 <span data-i18n="admin_workers">Työntekijät</span></button>
+    <button class="sidebar-link" onclick="showTab('employers')">🏢 <span data-i18n="admin_employers">Työnantajat</span></button>
+    <button class="sidebar-link" onclick="showTab('messages')">✉️ <span data-i18n="admin_messages">Viestit</span></button>
+    <div style="flex:1"></div>
+    <div class="lang-switcher" style="margin:8px">
+      <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">FI</button>
+      <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    </div>
+    <a onclick="goTo('home');return false;" href='#' class="sidebar-link" style="font-size:11px" data-i18n="nav_frontpage">← Etusivulle</a>
+  </div>
+
+  <div class="admin-main">
+    <div id="tab-overview">
+      <div class="admin-topbar"><h1 data-i18n="admin_overview">Yleiskatsaus</h1><span style="font-size:12px;color:var(--ink3)" data-i18n="admin_updated">27.4.2026 klo 14:32</span></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-num">1 240</div><div class="sc-label" data-i18n="stat_workers_label">Työntekijät</div><div class="sc-change" data-i18n="stat_workers_change">↑ +34 tällä viikolla</div></div>
+        <div class="stat-card"><div class="sc-num">380</div><div class="sc-label" data-i18n="stat_employers_label">Työnantajat</div><div class="sc-change" data-i18n="stat_employers_change">↑ +12 tällä viikolla</div></div>
+        <div class="stat-card"><div class="sc-num">847</div><div class="sc-label" data-i18n="stat_msgs_label">Viestit</div><div class="sc-change" data-i18n="stat_msgs_change">↑ +91 tällä viikolla</div></div>
+        <div class="stat-card"><div class="sc-num">94%</div><div class="sc-label" data-i18n="stat_active_label">Aktiiviset</div><div class="sc-change" data-i18n="stat_active_change">Hyvä taso</div></div>
+      </div>
+      <div class="admin-table-wrap">
+        <div class="admin-table-head"><h3 data-i18n="admin_new_regs">Uusimmat rekisteröitymiset</h3><button class="btn-outline btn-sm" data-i18n="admin_export">Vie CSV</button></div>
+        <table><thead><tr><th data-i18n="th_name">Nimi</th><th data-i18n="th_type">Tyyppi</th><th data-i18n="th_city">Kaupunki</th><th data-i18n="th_industry">Toimiala</th><th data-i18n="th_date">Rekisteröityi</th><th data-i18n="th_status">Tila</th></tr></thead>
+        <tbody id="overviewRows"></tbody></table>
+      </div>
+    </div>
+
+    <div id="tab-workers" style="display:none">
+      <div class="admin-topbar"><h1 data-i18n="admin_workers">Työntekijät</h1><button class="btn-outline btn-sm" data-i18n="admin_export">Vie CSV</button></div>
+      <div class="admin-table-wrap">
+        <table><thead><tr><th data-i18n="th_name">Nimi</th><th data-i18n="th_title">Titteli</th><th data-i18n="th_city">Kaupunki</th><th data-i18n="th_langs">Kielet</th><th data-i18n="th_avail">Saatavuus</th><th data-i18n="th_status">Tila</th><th data-i18n="th_actions">Toiminnot</th></tr></thead>
+        <tbody id="workerRows"></tbody></table>
+      </div>
+    </div>
+
+    <div id="tab-employers" style="display:none">
+      <div class="admin-topbar"><h1 data-i18n="admin_employers">Työnantajat</h1><button class="btn-outline btn-sm" data-i18n="admin_export">Vie CSV</button></div>
+      <div class="admin-table-wrap">
+        <table><thead><tr><th data-i18n="th_name">Yritys</th><th data-i18n="th_ytunnus">Y-tunnus</th><th data-i18n="th_city">Kaupunki</th><th data-i18n="th_contact">Yhteyshenkilö</th><th data-i18n="th_date">Rekisteröityi</th><th data-i18n="th_status">Tila</th><th data-i18n="th_actions">Toiminnot</th></tr></thead>
+        <tbody id="employerRows"></tbody></table>
+      </div>
+    </div>
+
+    <div id="tab-messages" style="display:none">
+      <div class="admin-topbar"><h1 data-i18n="admin_messages">Viestit</h1></div>
+      <div class="admin-table-wrap">
+        <table><thead><tr><th data-i18n="th_sender">Työnantaja</th><th data-i18n="th_recipient">Työntekijä</th><th data-i18n="th_sent">Lähetetty</th><th data-i18n="th_status">Tila</th></tr></thead>
+        <tbody id="msgRows"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+<!-- PAGE: about -->
+<div class="page" id="page-about"><nav class="nav"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><div class="nav-links"><a href="#" onclick="goTo('pricing');return false;" class="btn-outline">Hinnoittelu</a><a href="#" onclick="goTo('search');return false;" class="btn-outline">Hae</a><a href="#" onclick="goTo('worker-reg');return false;" class="btn-outline">Olen työntekijä</a><a href="#" onclick="goTo('employer-reg');return false;" class="btn-primary">Olen työnantaja</a></div></nav><section style="background:var(--ink);padding:72px 40px;text-align:center"><h1 style="font-family:var(--font-head);font-size:clamp(28px,5vw,48px);color:white;font-weight:400;margin-bottom:16px">Rakennettu tekemään töiden löytämisestä <em style="color:var(--lime)">helppoa.</em></h1><p style="font-size:14px;color:rgba(255,255,255,0.55);font-weight:300;max-width:560px;margin:0 auto">Lisaduuni.com yhdistää osa-aikatyöntekijät ja työnantajat nopeasti ja helposti.</p></section><section style="padding:52px 40px;max-width:860px;margin:0 auto"><div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;margin-bottom:40px"><div><div style="font-size:11px;font-weight:500;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px">Miksi Lisaduuni?</div><h2 style="font-family:var(--font-head);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:12px">Sijaisen löytäminen kestää liian kauan</h2><p style="color:var(--ink3);font-size:13px;line-height:1.8;margin-bottom:14px;font-weight:300">Suomessa sijaisten löytäminen vie pahimmillaan tunteja. Lisaduuni.com ratkaisee tämän — työntekijät ilmoittavat saatavuutensa etukäteen.</p><a href="mailto:info@lisaduuni.com" class="btn-primary">📧 info@lisaduuni.com</a></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center"><div style="font-family:var(--font-head);font-size:28px;color:var(--lime)">1 240</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Työntekijää</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center"><div style="font-family:var(--font-head);font-size:28px;color:var(--lime)">380</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Työnantajaa</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center"><div style="font-family:var(--font-head);font-size:28px;color:var(--lime)">47</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Kaupunkia</div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center"><div style="font-family:var(--font-head);font-size:28px;color:var(--lime)">94%</div><div style="font-size:10px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Tyytyväisiä</div></div></div></div></section><footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span><div class="footer-links"><a href="#" onclick="goTo('gdpr');return false;">Tietosuoja</a><a href="#" onclick="goTo('blog');return false;">Blogi</a></div></footer></div>
+
+<!-- PAGE: gdpr -->
+<div class="page" id="page-gdpr"><nav class="nav"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><div class="nav-links"><a href="#" onclick="goTo('home');return false;" class="btn-outline">← Etusivulle</a></div></nav><div style="max-width:720px;margin:0 auto;padding:52px 40px"><div style="margin-bottom:32px"><div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:8px">Päivitetty 29.4.2026</div><h1 style="font-family:var(--font-head);font-size:34px;font-weight:400;color:var(--ink);margin-bottom:10px">Tietosuojaseloste &amp; Käyttöehdot</h1><p style="color:var(--ink3);font-size:13px;line-height:1.75;font-weight:300">Lisaduuni.com noudattaa EU:n GDPR-asetusta ja Suomen tietosuojalakia.</p></div><div style="display:flex;flex-direction:column;gap:14px"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px"><h2 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--lime);margin-bottom:8px">1. Rekisterinpitäjä</h2><p style="color:var(--ink2);font-size:13px;line-height:1.7">Lisaduuni.com, Helsinki. Yhteyshenkilö: <a href="mailto:privacy@lisaduuni.com" style="color:var(--lime)">privacy@lisaduuni.com</a></p></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px"><h2 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--lime);margin-bottom:8px">2. Kerättävät tiedot</h2><ul style="color:var(--ink3);font-size:13px;line-height:1.9;padding-left:16px"><li>Nimi, sähköposti, puhelin</li><li>Kaupunki, ammattinimike, toimiala</li><li>Saatavuustiedot ja dokumentit (CV, todistukset)</li><li>Viestintähistoria</li><li>Yritystiedot (nimi, Y-tunnus)</li></ul></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px"><h2 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--lime);margin-bottom:10px">3. GDPR-oikeutesi</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px">✅ Oikeus tutustua tietoihin</div><div style="font-size:11px;color:var(--ink3)">Pyydä tietosi milloin tahansa.</div></div><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px">✅ Oikeus korjaamiseen</div><div style="font-size:11px;color:var(--ink3)">Korjaa virheelliset tiedot.</div></div><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px">✅ Oikeus poistamiseen</div><div style="font-size:11px;color:var(--ink3)">Pyydä tilisi poistoa.</div></div><div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:3px">✅ Oikeus siirtää tiedot</div><div style="font-size:11px;color:var(--ink3)">Saa tietosi koneluettavana.</div></div></div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px"><h2 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--lime);margin-bottom:8px">4. Käyttöehdot</h2><ul style="color:var(--ink3);font-size:13px;line-height:1.9;padding-left:16px"><li>Palvelu on tarkoitettu täysi-ikäisille (18+)</li><li>Käyttäjä vastaa tietojensa oikeellisuudesta</li><li>Lisaduuni.com ei ole työnvälitystoimisto</li><li>Emme käytä mainosseurantaevästeitä</li></ul></div><div style="background:rgba(200,240,96,0.06);border:1px solid rgba(200,240,96,0.2);border-radius:12px;padding:20px;text-align:center"><p style="color:var(--ink2);font-size:13px;margin-bottom:12px">Kysymyksiä tietosuojasta?</p><a href="mailto:privacy@lisaduuni.com" class="btn-primary">📧 privacy@lisaduuni.com</a></div></div></div><footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer></div>
+
+<!-- PAGE: blog -->
+<div class="page" id="page-blog"><nav class="nav"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><div class="nav-links"><a href="#" onclick="goTo('search');return false;" class="btn-outline">Hae</a><a href="#" onclick="goTo('worker-reg');return false;" class="btn-outline">Olen työntekijä</a><a href="#" onclick="goTo('employer-reg');return false;" class="btn-primary">Olen työnantaja</a></div></nav><div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 40px;text-align:center"><div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:8px">Blogi &amp; Uutiset</div><h1 style="font-family:var(--font-head);font-size:34px;font-weight:400;color:var(--ink)">Ajankohtaista työelämästä</h1><p style="color:var(--ink3);font-size:13px;margin-top:8px;font-weight:300">Vinkkejä ja uutisia osa-aikatyöstä Suomessa</p></div><div style="max-width:940px;margin:0 auto;padding:40px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'"><div style="height:130px;background:linear-gradient(135deg,#1a2e0a,#0d1f05);display:flex;align-items:center;justify-content:center;font-size:40px">🏥</div><div style="padding:18px"><span style="background:rgba(200,240,96,0.1);color:var(--lime);padding:2px 10px;border-radius:100px;font-size:10px;font-weight:500">Terveydenhuolto · 15.4.2026</span><h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin:8px 0 6px;line-height:1.3">Sairaanhoitajapula Suomessa — miten sijaistoiminta auttaa?</h3><p style="color:var(--ink3);font-size:12px;line-height:1.65;font-weight:300">Suomessa tarvitaan arviolta 3 000 lisää sairaanhoitajaa seuraavan viiden vuoden aikana...</p></div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'"><div style="height:130px;background:linear-gradient(135deg,#0a1f2e,#0a1a2e);display:flex;align-items:center;justify-content:center;font-size:40px">📚</div><div style="padding:18px"><span style="background:rgba(96,180,240,0.1);color:#60b4f0;padding:2px 10px;border-radius:100px;font-size:10px;font-weight:500">Opetus · 8.4.2026</span><h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin:8px 0 6px;line-height:1.3">5 vinkkiä opettajasijaiselle — näin saat enemmän keikkoja</h3><p style="color:var(--ink3);font-size:12px;line-height:1.65;font-weight:300">Hyvä sijainen on kouluille kultaa. Miten erottua muista sijaisista?</p></div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:24px;margin-bottom:10px">💰</div><div style="font-size:10px;color:var(--lime);font-weight:500;margin-bottom:5px">TYÖNANTAJILLE · 1.4.2026</div><h3 style="font-family:var(--font-head);font-size:14px;font-weight:400;color:var(--ink);margin-bottom:5px">Palkkaopas sijaisille 2026</h3><p style="color:var(--ink3);font-size:11px;line-height:1.6;font-weight:300">Toimialakohtaiset palkkatasot.</p></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:24px;margin-bottom:10px">📱</div><div style="font-size:10px;color:var(--lime);font-weight:500;margin-bottom:5px">UUTISET · 20.3.2026</div><h3 style="font-family:var(--font-head);font-size:14px;font-weight:400;color:var(--ink);margin-bottom:5px">Mobiilisovellus syksyllä 2026</h3><p style="color:var(--ink3);font-size:11px;line-height:1.6;font-weight:300">iOS ja Android tulossa.</p></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'"><div style="font-size:24px;margin-bottom:10px">🗺️</div><div style="font-size:10px;color:var(--lime);font-weight:500;margin-bottom:5px">MARKKINAT · 10.3.2026</div><h3 style="font-family:var(--font-head);font-size:14px;font-weight:400;color:var(--ink);margin-bottom:5px">Missä eniten kysyntää sijaisille?</h3><p style="color:var(--ink3);font-size:11px;line-height:1.6;font-weight:300">Data 380 työnantajalta.</p></div></div><div style="margin-top:24px;background:linear-gradient(135deg,rgba(200,240,96,0.07),rgba(96,180,240,0.04));border:1px solid rgba(200,240,96,0.18);border-radius:14px;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap"><div><h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:4px">Tilaa uutiskirje</h3><p style="color:var(--ink3);font-size:12px;font-weight:300">Parhaat vinkit suoraan sähköpostiisi.</p></div><div style="display:flex;gap:8px"><input type="email" placeholder="sähköpostisi@email.fi" style="padding:8px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-pill);font-size:12px;color:var(--ink);font-family:var(--font-body);outline:none;width:200px"/><button class="btn-primary" onclick="alert('Kiitos tilauksesta!')">Tilaa →</button></div></div></div><footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer></div>
+
+<!-- PAGE: pricing -->
+<div class="page" id="page-pricing"><nav class="nav"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><div class="nav-links"><a href="#" onclick="goTo('search');return false;" class="btn-outline">Hae</a><a href="#" onclick="goTo('worker-reg');return false;" class="btn-outline">Olen työntekijä</a><a href="#" onclick="goTo('employer-reg');return false;" class="btn-primary">Olen työnantaja</a></div></nav><div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:48px 40px;text-align:center"><div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:8px">Hinnoittelu</div><h1 style="font-family:var(--font-head);font-size:34px;font-weight:400;color:var(--ink);margin-bottom:8px">Yksinkertainen, reilu hinnoittelu</h1><p style="color:var(--ink3);font-size:13px;font-weight:300">Työntekijöille aina ilmainen. Työnantajille joustavat paketit.</p></div><div style="max-width:820px;margin:0 auto;padding:48px 40px"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px"><div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px"><div style="font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;margin-bottom:12px">Free</div><div style="font-family:var(--font-head);font-size:36px;color:var(--ink);font-weight:400;margin-bottom:4px">€0<span style="font-size:13px;color:var(--ink3)">/kk</span></div><div style="font-size:12px;color:var(--ink3);margin-bottom:18px">Työntekijöille ilmainen</div><div style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px"><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Profiili &amp; kalenteri</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>CV &amp; todistukset</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Viestit työnantajilta</div></div><button class="btn-outline" style="width:100%;padding:9px;border-radius:var(--radius-pill)" onclick="goTo('worker-reg')">Rekisteröidy ilmaiseksi</button></div><div style="background:var(--bg2);border:2px solid var(--lime);border-radius:16px;padding:24px;position:relative"><div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--lime);color:var(--bg);padding:3px 12px;border-radius:100px;font-size:10px;font-weight:700">SUOSITUIN</div><div style="font-size:11px;font-weight:500;color:var(--lime);text-transform:uppercase;margin-bottom:12px">Basic</div><div style="font-family:var(--font-head);font-size:36px;color:var(--ink);font-weight:400;margin-bottom:4px">€39<span style="font-size:13px;color:var(--ink3)">/kk</span></div><div style="font-size:12px;color:var(--ink3);margin-bottom:18px">Pienille työnantajille</div><div style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px"><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Haku kaikilla filttereillä</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>20 yhteydenottoa/kk</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Suorat viestit</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Profiilien tallennus</div></div><button class="btn-primary" style="width:100%;padding:9px;border-radius:var(--radius-pill)" onclick="goTo('employer-reg')">Aloita 14 pv ilmaiseksi →</button></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px"><div style="font-size:11px;font-weight:500;color:var(--ink3);text-transform:uppercase;margin-bottom:12px">Pro</div><div style="font-family:var(--font-head);font-size:36px;color:var(--ink);font-weight:400;margin-bottom:4px">€99<span style="font-size:13px;color:var(--ink3)">/kk</span></div><div style="font-size:12px;color:var(--ink3);margin-bottom:18px">Suurille organisaatioille</div><div style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px"><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Kaikki Basic + rajaton kontaktointi</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Työnhakuilmoitukset</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Priorisoitu näkyvyys</div><div style="font-size:12px;color:var(--ink2)"><span style="color:var(--lime)">✓ </span>Oma työnantajabrändi</div></div><button class="btn-outline" style="width:100%;padding:9px;border-radius:var(--radius-pill)" onclick="goTo('employer-reg')">Ota yhteyttä</button></div></div><div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:26px;text-align:center"><h3 style="font-family:var(--font-head);font-size:18px;font-weight:400;color:var(--ink);margin-bottom:8px">Räätälöity ratkaisu?</h3><p style="color:var(--ink3);font-size:13px;margin-bottom:14px;font-weight:300">Kunnille ja sairaanhoitopiireille yksilöllisiä paketteja.</p><a href="mailto:info@lisaduuni.com" class="btn-primary">Ota yhteyttä myyntiin →</a></div></div><footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer></div>
+
+<script>
+
+// ===================================================
+// LISADUUNI.COM — SPA master script
+// ===================================================
+
+// ---------- i18n (inline) ----------
+// ============================================================
+// Lisaduuni.com — Bilingual (FI / EN) translation engine
+// ============================================================
+const TRANSLATIONS = {
+  fi: {
+    // NAV
+    nav_search: "Hae työntekijöitä",
+    nav_worker: "Olen työntekijä",
+    nav_employer: "Olen työnantaja",
+    nav_back_search: "← Takaisin hakuun",
+    nav_edit_avail: "Muokkaa saatavuutta",
+    nav_back_profile: "← Takaisin profiiliin",
+    nav_login_employer: "Kirjaudu työnantajana",
+    nav_frontpage: "← Etusivulle",
+
+    // HOMEPAGE
+    hero_badge: "Suomen johtava osa-aikatyöalusta",
+    hero_h1_1: "Löydä sijainen.",
+    hero_h1_2: "Tänään.",
+    hero_sub: "Yli 1 200 osa-aikatyöntekijää ja sijaista ilmoittaa saatavuutensa Lisaduuni.comissa. Löydä oikea henkilö kaupungin, taitojen ja päivämäärän mukaan.",
+    hero_cta1: "Hae työntekijöitä →",
+    hero_cta2: "Ilmoita saatavuutesi",
+    stat_workers: "Työntekijää",
+    stat_employers: "Työnantajaa",
+    stat_cities: "Kaupunkia",
+    how_label: "Miten se toimii",
+    how_title: "Kolme askelta riittää",
+    step1_title: "Rekisteröidy",
+    step1_desc: "Luo profiili muutamassa minuutissa. Kerro taidoistasi, kielistäsi ja tyypistä.",
+    step2_title: "Merkitse saatavuus",
+    step2_desc: "Valitse kalenterista vapaat päivät. Päivitä saatavuus milloin tahansa helposti.",
+    step3_title: "Tule löydetyksi",
+    step3_desc: "Työnantajat löytävät sinut hakufilttereillä ja ottavat yhteyttä suoraan.",
+    cat_label: "Toimialat",
+    cat_title: "Kaikki alat yhdessä",
+    cat_health: "Terveydenhuolto",
+    cat_edu: "Opetus & Kasvatus",
+    cat_retail: "Kauppa & Myynti",
+    cat_food: "Ravintola & Catering",
+    cat_build: "Rakennus & Tekniikka",
+    cat_office: "Toimistotyö",
+    cat_logistics: "Logistiikka",
+    cat_clean: "Siivous & Huolto",
+    cta_title: "Valmis aloittamaan?",
+    cta_sub: "Rekisteröityminen on ilmaista ja kestää alle 3 minuuttia.",
+    cta_btn1: "Rekisteröidy työntekijänä",
+    cta_btn2: "Rekisteröidy työnantajana",
+
+    // AUTH
+    worker_reg_title: "Rekisteröidy Lisaduuni.comiin",
+    worker_reg_sub: "Ilmoita saatavuutesi ja tule löydetyksi työnantajille",
+    employer_reg_title: "Rekisteröidy Lisaduuni.comiin työnantajana",
+    employer_reg_sub: "Löydä sijainen tai osa-aikatyöntekijä nopeasti",
+    tab_register: "Rekisteröidy",
+    tab_login: "Kirjaudu sisään",
+    login_btn: "Kirjaudu sisään →",
+    register_btn: "Luo tili →",
+    employer_reg_btn: "Luo työnantajatili →",
+    switch_to_login: "Onko sinulla jo tili?",
+    switch_login_link: "Kirjaudu sisään",
+    switch_to_reg: "Ei tiliä?",
+    switch_reg_link: "Rekisteröidy ilmaiseksi",
+
+    // FORM LABELS
+    lbl_firstname: "Etunimi *",
+    lbl_lastname: "Sukunimi *",
+    lbl_email: "Sähköposti *",
+    lbl_phone: "Puhelin",
+    lbl_city: "Kaupunki *",
+    lbl_title: "Ammattinimike *",
+    lbl_industry: "Toimiala *",
+    lbl_languages: "Kielet",
+    lbl_worktype: "Työn tyyppi",
+    lbl_bio: "Lyhyt esittely",
+    lbl_password: "Salasana *",
+    lbl_company: "Yrityksen nimi *",
+    lbl_ytunnus: "Y-tunnus *",
+    lbl_contact: "Yhteyshenkilö *",
+    lbl_company_desc: "Yrityksen kuvaus",
+
+    // PLACEHOLDERS
+    ph_firstname: "Anna",
+    ph_lastname: "Mäkinen",
+    ph_email_worker: "anna@email.fi",
+    ph_email_employer: "hr@yritys.fi",
+    ph_phone_worker: "+358 40 123 4567",
+    ph_phone_employer: "+358 9 123 4567",
+    ph_city: "Valitse kaupunki",
+    ph_industry: "Valitse toimiala",
+    ph_title: "esim. Sairaanhoitaja, Opettaja, Myyjä",
+    ph_bio: "Kerro itsestäsi ja kokemuksestasi...",
+    ph_password: "Vähintään 8 merkkiä",
+    ph_company: "Yritys Oy",
+    ph_ytunnus: "1234567-8",
+    ph_company_desc: "Kerro yrityksestänne...",
+    ph_contact: "Etunimi Sukunimi",
+
+    // INDUSTRIES
+    ind_all: "Valitse ammattiryhma",
+    ind_expert: "Erityisasiantuntijat",
+    ind_specialist: "Asiantuntijat",
+    ind_office: "Toimisto- ja asiakaspalvelutyöntekijät",
+    ind_service: "Palvelu- ja myyntityöntekijät",
+    ind_farm: "Maanviljelijät, metsätyöntekijät ym.",
+    ind_build: "Rakennus-, korjaus- ja valmistustyöntekijät",
+    ind_process: "Prosessi- ja kuljetustyöntekijät",
+    ind_other: "Muut työntekijät",
+    filter_jobcat: "Ammattiryhmä",
+    filter_all_jobcat: "Kaikki ammattiryhmät",
+    jobcat_placeholder: "Suodata vaihtoehtoja",
+    jobcat_add: "Lisää hakuehdoksi",
+    jobcat_cancel: "Peruuta",
+    jobcat_info: "Voit valita hakuehdoksi yhden tai useamman ammattiryhmän listasta.",
+
+    // WORK TYPES
+    wt_sub: "Sijainen",
+    wt_part: "Osa-aikainen",
+    wt_gig: "Keikkatyö",
+    wt_remote: "Etätyö",
+
+    // LANGUAGES
+    lang_fi: "Suomi",
+    lang_sv: "Ruotsi",
+    lang_en: "Englanti",
+    lang_ru: "Venäjä",
+    lang_et: "Viro",
+
+    // SEARCH PAGE
+    search_title: "Löydä oikea henkilö",
+    search_sub: "Yli 1 200 saatavilla olevaa osa-aikatyöntekijää ja sijaista",
+    search_placeholder: "Hae nimellä, tittelillä tai taidolla...",
+    search_btn: "Hae",
+    filter_title: "Rajaa hakua",
+    filter_city: "Kaupunki",
+    filter_industry: "Toimiala",
+    filter_lang: "Kieli",
+    filter_type: "Työn tyyppi",
+    filter_date: "Saatavilla alkaen",
+    filter_all_cities: "Kaikki",
+    filter_all_ind: "Kaikki",
+    filter_all_lang: "Kaikki",
+    filter_all_types: "Kaikki",
+    filter_btn: "Hae nyt",
+    filter_reset: "Tyhjennä",
+    results_sort: "Saatavuus ensin",
+    results_found: "työntekijää löydetty",
+    contact_btn: "Ota yhteyttä",
+
+    // MODAL
+    modal_title: "Lähetä viesti",
+    modal_target_prefix: "Viesti henkilölle",
+    lbl_modal_company: "Yrityksen nimi *",
+    lbl_modal_email: "Sähköpostisi *",
+    lbl_modal_period: "Ajanjakso",
+    lbl_modal_msg: "Viesti *",
+    ph_modal_company: "Yritys Oy",
+    ph_modal_email: "hr@yritys.fi",
+    ph_modal_period: "esim. 5.–9.5.2026",
+    ph_modal_msg: "Kerro tehtävästä ja aikataulusta...",
+    modal_send: "Lähetä viesti →",
+    modal_success: "✅ Viesti lähetetty onnistuneesti!",
+
+    // PROFILE
+    profile_back: "← Takaisin hakuun",
+    profile_intro: "Esittely",
+    profile_calendar: "Saatavuuskalenteri",
+    profile_skills: "Taidot & Osaaminen",
+    profile_info: "Perustiedot",
+    profile_week: "Tällä viikolla",
+    profile_updated: "Päivitetty 27.4.2026",
+    profile_contact_btn: "✉️ Lähetä viesti",
+    info_city: "Kaupunki",
+    info_industry: "Toimiala",
+    info_type: "Työn tyyppi",
+    info_langs: "Kielet",
+    info_exp: "Kokemus",
+    avail_today: "Saatavilla tänään",
+    avail_tag_health: "Terveydenhuolto",
+    contact_modal_title: "Lähetä viesti",
+    contact_modal_sub: "Ota yhteyttä Anna Mäkiseen",
+    contact_success: "✅ Viesti lähetetty! Anna vastaa teille pian.",
+
+    // AVAILABILITY PAGE
+    avail_page_title: "Merkitse saatavuutesi",
+    avail_page_sub: "Valitse kalenterista päivät jolloin olet saatavilla. Työnantajat näkevät nämä hakutuloksissa.",
+    avail_cal_title: "Saatavuuskalenteri",
+    avail_shifts: "Tyypilliset työvuorot",
+    shift_morning: "Aamuvuoro (06:00–14:00)",
+    shift_evening: "Iltavuoro (14:00–22:00)",
+    shift_night: "Yövuoro (22:00–06:00)",
+    shift_full: "Kokopäiväinen (08:00–16:00)",
+    shift_part: "Osa-aikainen (vapaa aika)",
+    avail_area: "Työskentelyalue",
+    avail_primary_city: "Ensisijainen kaupunki",
+    avail_remote_q: "Etätyö mahdollinen?",
+    avail_remote_yes: "Kyllä",
+    avail_remote_no: "Ei",
+    avail_notes: "Lisätietoja työnantajille",
+    avail_msg_lbl: "Viesti työnantajille (valinnainen)",
+    avail_msg_ph: "esim. Pystyn aloittamaan lyhyelläkin varoitusajalla...",
+    avail_wage_lbl: "Palkkatoive (€/h)",
+    avail_wage_ph: "esim. 18–22 €/h",
+    avail_cancel: "Peruuta",
+    avail_save: "Tallenna saatavuus ✓",
+    avail_saved: "✅ Saatavuustiedot tallennettu! Profiilisi on nyt päivitetty.",
+    selected_days: "päivää",
+
+    // ADMIN
+    admin_overview: "Yleiskatsaus",
+    admin_workers: "Työntekijät",
+    admin_employers: "Työnantajat",
+    admin_messages: "Viestit",
+    admin_updated: "27.4.2026 klo 14:32",
+    admin_export: "Vie CSV",
+    admin_new_regs: "Uusimmat rekisteröitymiset",
+    admin_cities: "Kaupunkijakauma — Top 5",
+    stat_workers_label: "Työntekijät",
+    stat_employers_label: "Työnantajat",
+    stat_msgs_label: "Viestit lähetetty",
+    stat_active_label: "Aktiiviset profiilit",
+    stat_workers_change: "↑ +34 tällä viikolla",
+    stat_employers_change: "↑ +12 tällä viikolla",
+    stat_msgs_change: "↑ +91 tällä viikolla",
+    stat_active_change: "Hyvä taso",
+    th_name: "Nimi", th_type: "Tyyppi", th_city: "Kaupunki", th_industry: "Toimiala",
+    th_date: "Rekisteröityi", th_status: "Tila", th_actions: "Toiminnot",
+    th_title: "Titteli", th_langs: "Kielet", th_avail: "Saatavuus",
+    th_ytunnus: "Y-tunnus", th_contact: "Yhteyshenkilö",
+    th_sender: "Työnantaja", th_recipient: "Työntekijä", th_sent: "Lähetetty",
+    status_active: "Aktiivinen", status_pending: "Odottaa", status_inactive: "Ei aktiivinen",
+    btn_show: "Näytä", btn_approve: "Hyväksy", btn_reject: "Hylkää",
+    avail_yes: "Saatavilla", avail_no: "Ei saatavilla",
+    msg_sent: "Lähetetty", msg_waiting: "Odottaa vastausta",
+
+    // MONTHS
+    months: ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'],
+    days_short: ['Ma','Ti','Ke','To','Pe','La','Su'],
+
+    // FOOTER
+    footer_copy: "© 2026 Lisaduuni.com — Kaikki oikeudet pidätetään",
+    footer_search: "Hae työntekijöitä",
+    footer_privacy: "Tietosuoja",
+    footer_terms: "Käyttöehdot",
+    footer_admin: "Admin",
+  },
+
+  en: {
+    nav_search: "Find workers",
+    nav_worker: "I'm a worker",
+    nav_employer: "I'm an employer",
+    nav_back_search: "← Back to search",
+    nav_edit_avail: "Edit availability",
+    nav_back_profile: "← Back to profile",
+    nav_login_employer: "Log in as employer",
+    nav_frontpage: "← Home",
+
+    hero_badge: "Finland's leading part-time work platform",
+    hero_h1_1: "Find a substitute.",
+    hero_h1_2: "Today.",
+    hero_sub: "Over 1,200 part-time workers and substitutes post their availability on Lisaduuni.com. Find the right person by city, skills and date.",
+    hero_cta1: "Find workers →",
+    hero_cta2: "Post your availability",
+    stat_workers: "Workers",
+    stat_employers: "Employers",
+    stat_cities: "Cities",
+    how_label: "How it works",
+    how_title: "Three steps is all it takes",
+    step1_title: "Register",
+    step1_desc: "Create a profile in minutes. Share your skills, languages and preferred work type.",
+    step2_title: "Set availability",
+    step2_desc: "Pick available days in the calendar. Update anytime, instantly.",
+    step3_title: "Get discovered",
+    step3_desc: "Employers find you with search filters and contact you directly.",
+    cat_label: "Industries",
+    cat_title: "All sectors in one place",
+    cat_health: "Healthcare",
+    cat_edu: "Education",
+    cat_retail: "Retail & Sales",
+    cat_food: "Restaurant & Catering",
+    cat_build: "Construction & Engineering",
+    cat_office: "Office Work",
+    cat_logistics: "Logistics",
+    cat_clean: "Cleaning & Maintenance",
+    cta_title: "Ready to get started?",
+    cta_sub: "Registration is free and takes less than 3 minutes.",
+    cta_btn1: "Register as a worker",
+    cta_btn2: "Register as an employer",
+
+    worker_reg_title: "Join Lisaduuni.com",
+    worker_reg_sub: "Post your availability and get found by employers",
+    employer_reg_title: "Join Lisaduuni.com as an employer",
+    employer_reg_sub: "Find a substitute or part-time worker quickly",
+    tab_register: "Register",
+    tab_login: "Log in",
+    login_btn: "Log in →",
+    register_btn: "Create account →",
+    employer_reg_btn: "Create employer account →",
+    switch_to_login: "Already have an account?",
+    switch_login_link: "Log in",
+    switch_to_reg: "No account?",
+    switch_reg_link: "Register for free",
+
+    lbl_firstname: "First name *",
+    lbl_lastname: "Last name *",
+    lbl_email: "Email *",
+    lbl_phone: "Phone",
+    lbl_city: "City *",
+    lbl_title: "Job title *",
+    lbl_industry: "Industry *",
+    lbl_languages: "Languages",
+    lbl_worktype: "Work type",
+    lbl_bio: "Short bio",
+    lbl_password: "Password *",
+    lbl_company: "Company name *",
+    lbl_ytunnus: "Business ID *",
+    lbl_contact: "Contact person *",
+    lbl_company_desc: "Company description",
+
+    ph_firstname: "Anna",
+    ph_lastname: "Mäkinen",
+    ph_email_worker: "anna@email.fi",
+    ph_email_employer: "hr@company.fi",
+    ph_phone_worker: "+358 40 123 4567",
+    ph_phone_employer: "+358 9 123 4567",
+    ph_city: "Select city",
+    ph_industry: "Select industry",
+    ph_title: "e.g. Nurse, Teacher, Sales Assistant",
+    ph_bio: "Tell us about yourself and your experience...",
+    ph_password: "At least 8 characters",
+    ph_company: "Company Ltd",
+    ph_ytunnus: "1234567-8",
+    ph_company_desc: "Tell us about your company...",
+    ph_contact: "First Last",
+
+    ind_all: "Select occupation group",
+    ind_expert: "Senior specialists",
+    ind_specialist: "Specialists",
+    ind_office: "Clerical & customer service workers",
+    ind_service: "Service & sales workers",
+    ind_farm: "Agricultural, forestry & fishery workers",
+    ind_build: "Construction, repair & manufacturing workers",
+    ind_process: "Process & transport workers",
+    ind_other: "Other workers",
+    filter_jobcat: "Occupation group",
+    filter_all_jobcat: "All occupation groups",
+    jobcat_placeholder: "Filter options",
+    jobcat_add: "Add to search criteria",
+    jobcat_cancel: "Cancel",
+    jobcat_info: "You can select one or more occupation groups from the list.",
+    ind_other: "Other",
+
+    wt_sub: "Substitute",
+    wt_part: "Part-time",
+    wt_gig: "Gig work",
+    wt_remote: "Remote",
+
+    lang_fi: "Finnish",
+    lang_sv: "Swedish",
+    lang_en: "English",
+    lang_ru: "Russian",
+    lang_et: "Estonian",
+
+    search_title: "Find the right person",
+    search_sub: "Over 1,200 available part-time workers and substitutes",
+    search_placeholder: "Search by name, title or skill...",
+    search_btn: "Search",
+    filter_title: "Filter results",
+    filter_city: "City",
+    filter_industry: "Industry",
+    filter_lang: "Language",
+    filter_type: "Work type",
+    filter_date: "Available from",
+    filter_all_cities: "All cities",
+    filter_all_ind: "All industries",
+    filter_all_lang: "All languages",
+    filter_all_types: "All types",
+    filter_btn: "Search now",
+    filter_reset: "Clear filters",
+    results_sort: "Availability first",
+    results_found: "workers found",
+    contact_btn: "Contact",
+
+    modal_title: "Send a message",
+    modal_target_prefix: "Message to",
+    lbl_modal_company: "Company name *",
+    lbl_modal_email: "Your email *",
+    lbl_modal_period: "Date / period",
+    lbl_modal_msg: "Message *",
+    ph_modal_company: "Company Ltd",
+    ph_modal_email: "hr@company.fi",
+    ph_modal_period: "e.g. 5–9 May 2026",
+    ph_modal_msg: "Describe the role, location and compensation...",
+    modal_send: "Send message →",
+    modal_success: "✅ Message sent successfully!",
+
+    profile_back: "← Back to search",
+    profile_intro: "About",
+    profile_calendar: "Availability calendar",
+    profile_skills: "Skills & Expertise",
+    profile_info: "Details",
+    profile_week: "This week",
+    profile_updated: "Updated 27 Apr 2026",
+    profile_contact_btn: "✉️ Send message",
+    info_city: "City",
+    info_industry: "Industry",
+    info_type: "Work type",
+    info_langs: "Languages",
+    info_exp: "Experience",
+    avail_today: "Available today",
+    avail_tag_health: "Healthcare",
+    contact_modal_title: "Send a message",
+    contact_modal_sub: "Contact Anna Mäkinen",
+    contact_success: "✅ Message sent! Anna will get back to you soon.",
+
+    avail_page_title: "Set your availability",
+    avail_page_sub: "Select days you are available in the calendar. Employers will see this in search results.",
+    avail_cal_title: "Availability calendar",
+    avail_shifts: "Typical shifts",
+    shift_morning: "Morning shift (06:00–14:00)",
+    shift_evening: "Evening shift (14:00–22:00)",
+    shift_night: "Night shift (22:00–06:00)",
+    shift_full: "Full day (08:00–16:00)",
+    shift_part: "Part-time (flexible hours)",
+    avail_area: "Work area",
+    avail_primary_city: "Primary city",
+    avail_remote_q: "Remote work possible?",
+    avail_remote_yes: "Yes",
+    avail_remote_no: "No",
+    avail_notes: "Notes for employers",
+    avail_msg_lbl: "Message for employers (optional)",
+    avail_msg_ph: "e.g. I can start on short notice...",
+    avail_wage_lbl: "Expected wage (€/h)",
+    avail_wage_ph: "e.g. 18–22 €/h",
+    avail_cancel: "Cancel",
+    avail_save: "Save availability ✓",
+    avail_saved: "✅ Availability saved! Your profile has been updated.",
+    selected_days: "days",
+
+    admin_overview: "Overview",
+    admin_workers: "Workers",
+    admin_employers: "Employers",
+    admin_messages: "Messages",
+    admin_updated: "27 Apr 2026 at 14:32",
+    admin_export: "Export CSV",
+    admin_new_regs: "Latest registrations",
+    admin_cities: "City distribution — Top 5",
+    stat_workers_label: "Workers",
+    stat_employers_label: "Employers",
+    stat_msgs_label: "Messages sent",
+    stat_active_label: "Active profiles",
+    stat_workers_change: "↑ +34 this week",
+    stat_employers_change: "↑ +12 this week",
+    stat_msgs_change: "↑ +91 this week",
+    stat_active_change: "Good level",
+    th_name: "Name", th_type: "Type", th_city: "City", th_industry: "Industry",
+    th_date: "Registered", th_status: "Status", th_actions: "Actions",
+    th_title: "Title", th_langs: "Languages", th_avail: "Availability",
+    th_ytunnus: "Business ID", th_contact: "Contact person",
+    th_sender: "Employer", th_recipient: "Worker", th_sent: "Sent",
+    status_active: "Active", status_pending: "Pending", status_inactive: "Inactive",
+    btn_show: "View", btn_approve: "Approve", btn_reject: "Reject",
+    avail_yes: "Available", avail_no: "Not available",
+    msg_sent: "Sent", msg_waiting: "Awaiting reply",
+
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    days_short: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+
+    footer_copy: "© 2026 Lisaduuni.com — All rights reserved",
+    footer_search: "Find workers",
+    footer_privacy: "Privacy",
+    footer_terms: "Terms",
+    footer_admin: "Admin",
+  }
+};
+
+let currentLang = localStorage.getItem('ld_lang') || 'fi';
+
+function t(key) {
+  return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) || TRANSLATIONS['fi'][key] || key;
+}
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('ld_lang', lang);
+  document.documentElement.lang = lang;
+  applyTranslations();
+  updateLangToggle();
+  if (typeof renderCalendar === 'function') renderCalendar();
+  if (typeof renderWorkers === 'function') renderWorkers(currentWorkers || []);
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const attr = el.getAttribute('data-i18n-attr');
+    const val = t(key);
+    if (attr) { el.setAttribute(attr, val); }
+    else { el.textContent = val; }
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    el.innerHTML = t(el.getAttribute('data-i18n-html'));
+  });
+}
+
+function updateLangToggle() {
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('lang-active', btn.getAttribute('data-lang') === currentLang);
+  });
+}
+
+function initLang() {
+  applyTranslations();
+  updateLangToggle();
+}
+
+document.addEventListener('DOMContentLoaded', initLang);
+
+
+// ---------- Router ----------
+function goTo(pageId) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var t = document.getElementById('page-' + pageId);
+  if (t) { t.classList.add('active'); window.scrollTo(0,0); }
+  applyTranslations();
+  updateLangToggle();
+  try{ if(typeof renderCalendar==='function') renderCalendar(); }catch(e){}
+  try{ if(pageId==='search') initMap(); }catch(e){}
+  try{ if(typeof renderTables==='function')   renderTables();   }catch(e){}
+  try{ if(typeof renderWorkers==='function')  renderWorkers(window._workers||[]); }catch(e){}
+}
+
+// ---------- Burger menus ----------
+document.addEventListener('click', function(e){
+  if(e.target && e.target.id==='burger'){
+    var nav=e.target.closest('nav');
+    if(nav){ var nl=nav.querySelector('.nav-links'); if(nl) nl.classList.toggle('open'); }
+  }
+});
+
+// ---------- Auth tab toggles (scoped per page) ----------
+function initAuthTabs(regId, loginId, fRegId, fLoginId){
+  var tr=document.getElementById(regId), tl=document.getElementById(loginId);
+  var fr=document.getElementById(fRegId), fl=document.getElementById(fLoginId);
+  if(!tr||!tl||!fr||!fl) return;
+  tr.addEventListener('click',function(){ tr.classList.add('active'); tl.classList.remove('active'); fr.style.display='block'; fl.style.display='none'; });
+  tl.addEventListener('click',function(){ tl.classList.add('active'); tr.classList.remove('active'); fl.style.display='block'; fr.style.display='none'; });
+}
+
+// ---------- Search page ----------
+var _workers = [
+  {id:1,name:'Anna Mäkinen',ini:'AM',col:'#1a2e0a',tc:'#a8d040',fi:'Sairaanhoitaja',en:'Nurse',city:'Helsinki',lang:['FI','EN'],type_fi:['Sijainen','Keikkatyö'],type_en:['Substitute','Gig work'],avail_fi:'Saatavilla tänään',avail_en:'Available today',skills:['Akuuttihoito','Sisätaudit','Lääkehoito'],profile:true},
+  {id:2,name:'Juho Korhonen',ini:'JK',col:'#0a1f2e',tc:'#60b4f0',fi:'Luokanopettaja',en:'Primary teacher',city:'Tampere',lang:['FI','SV'],type_fi:['Sijainen','Osa-aikainen'],type_en:['Substitute','Part-time'],avail_fi:'Saatavilla pe–su',avail_en:'Available Fri–Sun',skills:['Alakoulu','Matematiikka','Liikunta']},
+  {id:3,name:'Laura Virtanen',ini:'LV',col:'#2e0a1f',tc:'#f060b4',fi:'Myyjä',en:'Sales assistant',city:'Turku',lang:['FI','EN','RU'],type_fi:['Osa-aikainen','Keikkatyö'],type_en:['Part-time','Gig work'],avail_fi:'Saatavilla heti',avail_en:'Available immediately',skills:['Myynti','Kassatyö','Asiakaspalvelu']},
+  {id:4,name:'Mikael Lindström',ini:'ML',col:'#1f0a2e',tc:'#c060f0',fi:'Kokki',en:'Chef',city:'Helsinki',lang:['FI','SV','EN'],type_fi:['Keikkatyö'],type_en:['Gig work'],avail_fi:'Saatavilla viikonloppuisin',avail_en:'Available weekends',skills:['À la carte','Lounas','Catering']},
+  {id:5,name:'Sanna Heikkinen',ini:'SH',col:'#2e0a1a',tc:'#f060a0',fi:'Lähihoitaja',en:'Practical nurse',city:'Oulu',lang:['FI'],type_fi:['Sijainen','Osa-aikainen'],type_en:['Substitute','Part-time'],avail_fi:'Saatavilla ma–pe',avail_en:'Available Mon–Fri',skills:['Vanhustenhoito','Kotihoito','Haavahoito']},
+  {id:6,name:'Tommi Järvinen',ini:'TJ',col:'#0a2e0d',tc:'#60f070',fi:'Trukkikuski',en:'Forklift operator',city:'Lahti',lang:['FI'],type_fi:['Osa-aikainen','Keikkatyö'],type_en:['Part-time','Gig work'],avail_fi:'Saatavilla iltaisin',avail_en:'Available evenings',skills:['Trukinajo','Varastotyö','Pakkaaminen']},
+  {id:7,name:'Erika Salonen',ini:'ES',col:'#2e1a0a',tc:'#f0a060',fi:'Toimistosihteeri',en:'Office secretary',city:'Espoo',lang:['FI','EN'],type_fi:['Osa-aikainen','Etätyö'],type_en:['Part-time','Remote'],avail_fi:'Saatavilla heti',avail_en:'Available immediately',skills:['Excel','Word','Kirjanpito']},
+  {id:8,name:'Pekka Nieminen',ini:'PN',col:'#0a1a2e',tc:'#6090f0',fi:'Sähköasentaja',en:'Electrician',city:'Tampere',lang:['FI'],type_fi:['Keikkatyö'],type_en:['Gig work'],avail_fi:'Saatavilla 1.5 alkaen',avail_en:'Available from 1 May',skills:['Sähkötyöt','Asennukset','Tarkastukset']},
+  {id:9,name:'Aino Korhonen',ini:'AI',col:'#0a2e2a',tc:'#60f0e0',fi:'Siivousteknikko',en:'Cleaning technician',city:'Helsinki',lang:['FI','ET'],type_fi:['Osa-aikainen'],type_en:['Part-time'],avail_fi:'Saatavilla aamuisin',avail_en:'Available mornings',skills:['Toimistosiivous','Desinfiointi']},
+  {id:10,name:'Ville Laine',ini:'VL',col:'#2e200a',tc:'#f0c060',fi:'Tarjoilija',en:'Waiter/Bartender',city:'Turku',lang:['FI','EN','SV'],type_fi:['Keikkatyö'],type_en:['Gig work'],avail_fi:'Saatavilla viikonloppuisin',avail_en:'Available weekends',skills:['Tarjoilu','Baari']},
+  {id:11,name:'Kirsi Mäkinen',ini:'KM',col:'#1a0a2e',tc:'#a060f0',fi:'Varhaiskasvatuksen opettaja',en:'Early childhood teacher',city:'Vantaa',lang:['FI','EN'],type_fi:['Sijainen'],type_en:['Substitute'],avail_fi:'Saatavilla heti',avail_en:'Available immediately',skills:['Päiväkoti','Varhaiskasvatus']},
+  {id:12,name:'Risto Koivisto',ini:'RK',col:'#0a2e1a',tc:'#60f0a0',fi:'Myymäläpäällikkö',en:'Store manager',city:'Kouvola',lang:['FI','RU'],type_fi:['Osa-aikainen'],type_en:['Part-time'],avail_fi:'Saatavilla ma–ke',avail_en:'Available Mon–Wed',skills:['Johtaminen','Myynti']}
+];
+window._workers = _workers;
+window.currentWorkers = _workers.slice();
+
+function renderWorkers(list){
+  var c=document.getElementById('workerCards'); if(!c) return;
+  var lang=currentLang;
+  document.getElementById('resCount').textContent = list.length + ' ' + t('results_found');
+  c.innerHTML = list.map(function(w){
+    return '<div class="worker-card" onclick="'+(w.profile?"goTo('profile')":'void 0')+'">'
+      +'<div class="avatar" style="background:'+w.col+';color:'+w.tc+';border:1px solid '+w.tc+'33;width:44px;height:44px;font-size:12px;flex-shrink:0">'+w.ini+'</div>'
+      +'<div class="wc-info"><h4>'+w.name+'</h4>'
+      +'<div class="wc-meta">'+(lang==='en'?w.en:w.fi)+' · '+w.city+' · '+w.lang.join(', ')+'</div>'
+      +'<div class="wc-tags">'+w.skills.slice(0,3).map(function(s){return '<span class="wc-tag">'+s+'</span>';}).join('')
+      +(lang==='en'?w.type_en:w.type_fi).map(function(tp){return '<span class="wc-tag">'+tp+'</span>';}).join('')+'</div>'
+      +'</div><div class="wc-right">'
+      +'<span class="avail-badge-sm">✅ '+(lang==='en'?w.avail_en:w.avail_fi)+'</span>'
+      +'<button class="btn-primary btn-sm" onclick="event.stopPropagation();openContact(\''+w.name+'\')">'+t('contact_btn')+'</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+
+// Industry card filter toggle
+var _selIndustries = [];
+function toggleInd(btn){
+  var ind = btn.getAttribute('data-ind');
+  if(_selIndustries.includes(ind)){
+    _selIndustries = _selIndustries.filter(function(i){return i!==ind;});
+    btn.classList.remove('active');
+  } else {
+    _selIndustries.push(ind);
+    btn.classList.add('active');
+  }
+  filterWorkers();
+}
+
+function switchView(v){
+  var lv=document.getElementById('listView'), mv=document.getElementById('mapView');
+  var lb=document.getElementById('listViewBtn'), mb=document.getElementById('mapViewBtn');
+  if(v==='list'){
+    if(lv)lv.style.display='block'; if(mv)mv.style.display='none';
+    if(lb){lb.style.background='var(--lime)';lb.style.color='var(--bg)';}
+    if(mb){mb.style.background='transparent';mb.style.color='var(--ink3)';}
+  } else {
+    if(lv)lv.style.display='none'; if(mv)mv.style.display='block';
+    if(mb){mb.style.background='var(--lime)';mb.style.color='var(--bg)';}
+    if(lb){lb.style.background='transparent';lb.style.color='var(--ink3)';}
+    initMap();
+  }
+}
+function filterWorkers(){
+  var q=(document.getElementById('searchInput')||{value:''}).value.toLowerCase();
+  var city=(document.getElementById('fCity')||{value:''}).value;
+  var lang=(document.getElementById('fLang')||{value:''}).value;
+  var type=(document.getElementById('fType')||{value:''}).value;
+  window.currentWorkers = _workers.filter(function(w){
+    if(q && !w.name.toLowerCase().includes(q) && !(w.fi+' '+w.en).toLowerCase().includes(q) && !w.skills.join(' ').toLowerCase().includes(q)) return false;
+    if(city && w.city!==city) return false;
+    if(lang && !w.lang.includes(lang)) return false;
+    if(type && !(w.type_fi.concat(w.type_en)).some(function(tp){return tp.toLowerCase().includes(type.toLowerCase());})) return false;
+    if(_selIndustries.length>0 && !_selIndustries.some(function(ind){return (w.fi+' '+w.en+' '+w.skills.join(' ')).toLowerCase().includes(ind.toLowerCase());})) return false;
+    if(_selJobcats.length>0 && !_selJobcats.some(function(cat){return (w.fi+' '+w.en+' '+(w.type_fi||[]).join(' ')).toLowerCase().includes(cat.split('-')[0].toLowerCase());})) return false;
+    return true;
+  });
+  renderWorkers(window.currentWorkers);
+}
+
+function resetFilters(){
+  ['searchInput','fCity','fLang','fDate'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var ft=document.getElementById('fType');if(ft)ft.value='';
+  _selIndustries=[];
+  document.querySelectorAll('.ind-filter-btn').forEach(function(b){b.classList.remove('active');});
+  cancelJobcat();
+  window.currentWorkers=_workers.slice();
+  renderWorkers(window.currentWorkers);
+}
+
+// ---------- Jobcat filter ----------
+var _selJobcats = [];
+
+function toggleJobcat(){
+  var p=document.getElementById('jobcatPanel'), a=document.getElementById('jobcatArrow');
+  if(!p) return;
+  var open = p.style.display==='none';
+  p.style.display = open?'block':'none';
+  if(a) a.classList.toggle('open',open);
+}
+
+function filterJobcatList(){
+  var q=(document.getElementById('jobcatSearch')||{value:''}).value.toLowerCase();
+  document.querySelectorAll('#jobcatList .jobcat-item').forEach(function(item){
+    item.style.display = item.querySelector('span').textContent.toLowerCase().includes(q)?'flex':'none';
+  });
+}
+
+function updateJobcatSel(){
+  _selJobcats = Array.from(document.querySelectorAll('#jobcatList input:checked')).map(function(c){return c.value;});
+}
+
+function applyJobcat(){
+  var p=document.getElementById('jobcatPanel'), a=document.getElementById('jobcatArrow'), lbl=document.getElementById('jobcatLabel');
+  if(p) p.style.display='none';
+  if(a) a.classList.remove('open');
+  if(lbl){
+    if(_selJobcats.length===0){lbl.setAttribute('data-i18n','filter_all_jobcat');lbl.textContent=t('filter_all_jobcat');}
+    else{lbl.removeAttribute('data-i18n');lbl.textContent=_selJobcats.length+(currentLang==='en'?' selected':' valittu');}
+  }
+  renderJobcatTags();
+  filterWorkers();
+}
+
+function cancelJobcat(){
+  document.querySelectorAll('#jobcatList input').forEach(function(cb){cb.checked=false;});
+  _selJobcats=[];
+  var p=document.getElementById('jobcatPanel'), a=document.getElementById('jobcatArrow'), lbl=document.getElementById('jobcatLabel');
+  if(p) p.style.display='none';
+  if(a) a.classList.remove('open');
+  if(lbl){lbl.setAttribute('data-i18n','filter_all_jobcat');lbl.textContent=t('filter_all_jobcat');}
+  renderJobcatTags();
+  filterWorkers();
+}
+
+function removeJobcat(cat){
+  _selJobcats=_selJobcats.filter(function(c){return c!==cat;});
+  var cb=document.querySelector('#jobcatList input[value="'+cat+'"]');
+  if(cb) cb.checked=false;
+  applyJobcat();
+}
+
+function renderJobcatTags(){
+  var c=document.getElementById('jobcatTags'); if(!c) return;
+  if(_selJobcats.length===0){c.innerHTML='';return;}
+  c.innerHTML=_selJobcats.map(function(cat){
+    return '<span class="jobcat-tag">'+cat+' <button onclick="removeJobcat(\''+cat+'\')">✕</button></span>';
+  }).join('');
+}
+
+// ---------- Contact modal (search page) ----------
+function openContact(name){
+  var m=document.getElementById('searchModal'); if(!m) return;
+  var mt=document.getElementById('searchModalTarget'); if(mt) mt.textContent=t('modal_target_prefix')+' '+name;
+  m.classList.add('open');
+  var f=document.getElementById('searchContactForm'); if(f) f.style.display='block';
+  var ok=document.getElementById('searchOkMsg'); if(ok) ok.style.display='none';
+}
+
+// ---------- Profile calendar ----------
+var _calDate = new Date(2026,4,1);
+var _availDays = [1,2,4,5,8,9,10,12,15,16,19,20,22,23,26,27,29,30];
+
+function renderCalendar(){
+  var g=document.getElementById('calGrid'); if(!g) return;
+  var months=t('months'), days=t('days_short');
+  var tEl=document.getElementById('calTitle');
+  if(tEl) tEl.textContent=months[_calDate.getMonth()]+' '+_calDate.getFullYear();
+  g.innerHTML='';
+  days.forEach(function(d){var e=document.createElement('div');e.className='cal-day-name';e.textContent=d;g.appendChild(e);});
+  var first=new Date(_calDate.getFullYear(),_calDate.getMonth(),1).getDay();
+  var off=(first===0)?6:first-1;
+  for(var i=0;i<off;i++){var e=document.createElement('div');e.className='cal-day empty';g.appendChild(e);}
+  var total=new Date(_calDate.getFullYear(),_calDate.getMonth()+1,0).getDate();
+  var today=new Date();
+  for(var d=1;d<=total;d++){
+    var el=document.createElement('div');
+    el.className='cal-day'+(_availDays.includes(d)?' available':'');
+    if(_calDate.getMonth()===today.getMonth()&&_calDate.getFullYear()===today.getFullYear()&&d===today.getDate()) el.classList.add('today');
+    el.textContent=d; g.appendChild(el);
+  }
+}
+
+// Availability page calendar (editable)
+var _avCal = new Date(2026,4,1);
+var _avSel = new Set([1,2,4,5,8,9,10,12,15,16,19,20,22,23,26,27,29,30]);
+
+function renderAvailCal(){
+  var g=document.getElementById('avCalGrid'); if(!g) return;
+  var months=t('months'), days=t('days_short');
+  var tEl=document.getElementById('avCalTitle'); if(tEl) tEl.textContent=months[_avCal.getMonth()]+' '+_avCal.getFullYear();
+  g.innerHTML='';
+  days.forEach(function(d){var e=document.createElement('div');e.className='cal-day-name';e.textContent=d;g.appendChild(e);});
+  var first=new Date(_avCal.getFullYear(),_avCal.getMonth(),1).getDay();
+  var off=(first===0)?6:first-1;
+  for(var i=0;i<off;i++){var e=document.createElement('div');e.className='cal-day empty';g.appendChild(e);}
+  var total=new Date(_avCal.getFullYear(),_avCal.getMonth()+1,0).getDate();
+  for(var d=1;d<=total;d++){
+    (function(day){
+      var el=document.createElement('div');
+      el.className='cal-day'+(_avSel.has(day)?' available':'');
+      el.textContent=day;
+      el.addEventListener('click',function(){
+        _avSel.has(day)?_avSel.delete(day):_avSel.add(day);
+        el.classList.toggle('available');
+        var sc=document.getElementById('selCount'); if(sc) sc.textContent=_avSel.size;
+      });
+      g.appendChild(el);
+    })(d);
+  }
+  var sc=document.getElementById('selCount'); if(sc) sc.textContent=_avSel.size;
+}
+
+// ---------- Admin tables ----------
+function renderTables(){
+  var pill=function(type){
+    var cls={active:'active',pending:'pending',inactive:'inactive'};
+    var lbl={active:t('status_active'),pending:t('status_pending'),inactive:t('status_inactive')};
+    return '<span class="status-pill '+cls[type]+'">'+lbl[type]+'</span>';
+  };
+  var ov=document.getElementById('overviewRows');
+  if(ov) ov.innerHTML='<tr><td>Anna Mäkinen</td><td>'+(currentLang==='fi'?'Työntekijä':'Worker')+'</td><td>Helsinki</td><td>27.4.2026</td><td>'+pill('active')+'</td></tr>'
+    +'<tr><td>Yritys Oy</td><td>'+(currentLang==='fi'?'Työnantaja':'Employer')+'</td><td>Tampere</td><td>27.4.2026</td><td>'+pill('pending')+'</td></tr>'
+    +'<tr><td>Juho Korhonen</td><td>'+(currentLang==='fi'?'Työntekijä':'Worker')+'</td><td>Tampere</td><td>26.4.2026</td><td>'+pill('active')+'</td></tr>'
+    +'<tr><td>Laura Virtanen</td><td>'+(currentLang==='fi'?'Työntekijä':'Worker')+'</td><td>Turku</td><td>25.4.2026</td><td>'+pill('inactive')+'</td></tr>';
+  var wr=document.getElementById('workerRows');
+  if(wr) wr.innerHTML='<tr><td>Anna Mäkinen</td><td>Helsinki</td><td>FI, EN</td><td><span style="color:#a8d040;font-size:11px">'+t('avail_yes')+'</span></td><td>'+pill('active')+'</td><td><button class="btn-outline btn-sm">'+t('btn_show')+'</button></td></tr>'
+    +'<tr><td>Juho Korhonen</td><td>Tampere</td><td>FI, SV</td><td><span style="color:#a8d040;font-size:11px">'+t('avail_yes')+'</span></td><td>'+pill('active')+'</td><td><button class="btn-outline btn-sm">'+t('btn_show')+'</button></td></tr>'
+    +'<tr><td>Pekka Nieminen</td><td>Tampere</td><td>FI</td><td><span style="color:var(--ink3);font-size:11px">'+t('avail_no')+'</span></td><td>'+pill('inactive')+'</td><td><button class="btn-outline btn-sm">'+t('btn_show')+'</button></td></tr>';
+  var er=document.getElementById('employerRows');
+  if(er) er.innerHTML='<tr><td>Hoiva Plus Ky</td><td>2345678-9</td><td>Helsinki</td><td>24.4.2026</td><td>'+pill('active')+'</td><td><button class="btn-outline btn-sm">'+t('btn_show')+'</button></td></tr>'
+    +'<tr><td>Yritys Oy</td><td>4567890-1</td><td>Turku</td><td>27.4.2026</td><td>'+pill('pending')+'</td><td><button class="btn-primary btn-sm">'+t('btn_approve')+'</button></td></tr>';
+  var mr=document.getElementById('msgRows');
+  if(mr) mr.innerHTML='<tr><td>Hoiva Plus Ky</td><td>Anna Mäkinen</td><td>27.4.2026</td><td>'+pill('active')+'</td></tr>'
+    +'<tr><td>Koulu Oy</td><td>Juho Korhonen</td><td>26.4.2026</td><td>'+pill('active')+'</td></tr>'
+    +'<tr><td>Rakennus AB</td><td>Pekka Nieminen</td><td>26.4.2026</td><td>'+pill('pending')+'</td></tr>';
+}
+
+function showAdminTab(name, el){
+  ['overview','workers','employers','messages'].forEach(function(t){ var e=document.getElementById('tab-'+t); if(e) e.style.display=t===name?'block':'none'; });
+  document.querySelectorAll('.sidebar-link').forEach(function(e){e.classList.remove('active');});
+  if(el) el.classList.add('active');
+}
+
+// ---------- Profile bio / week ----------
+var _profileData = {
+  fi:{title:'Sairaanhoitaja · Helsinki',bio:'Olen kokenut sairaanhoitaja 8 vuoden työkokemuksella Helsingin yliopistollisesta sairaalasta. Erikoistunut sisätauteihin ja akuuttihoitoon.',industry:'Terveydenhuolto',type:'Sijainen, Keikkatyö',exp:'8 vuotta',week:[{d:'Ma 27.4',av:true},{d:'Ti 28.4',av:true},{d:'Ke 29.4',av:false},{d:'To 30.4',av:true},{d:'Pe 1.5',av:true}]},
+  en:{title:'Nurse · Helsinki',bio:'Experienced nurse with 8 years at Helsinki University Hospital, specializing in internal medicine and acute care.',industry:'Healthcare',type:'Substitute, Gig work',exp:'8 years',week:[{d:'Mon 27 Apr',av:true},{d:'Tue 28 Apr',av:true},{d:'Wed 29 Apr',av:false},{d:'Thu 30 Apr',av:true},{d:'Fri 1 May',av:true}]}
+};
+
+function renderProfile(){
+  var d=_profileData[currentLang];
+  var el;
+  if((el=document.getElementById('profileTitle'))) el.textContent=d.title;
+  if((el=document.getElementById('profileBio')))   el.textContent=d.bio;
+  if((el=document.getElementById('industryVal')))  el.textContent=d.industry;
+  if((el=document.getElementById('typeVal')))      el.textContent=d.type;
+  if((el=document.getElementById('expVal')))       el.textContent=d.exp;
+  var wv=document.getElementById('weekView');
+  if(wv) wv.innerHTML=d.week.map(function(w,i){
+    return '<div style="display:flex;justify-content:space-between;padding:6px 0;'+(i<d.week.length-1?'border-bottom:1px solid rgba(240,237,232,0.04)':'')+'"><span style="color:var(--ink3)">'+w.d+'</span><span style="'+(w.av?'color:#a8d040;font-weight:500':'color:var(--ink3)')+'">'+t(w.av?'avail_yes':'avail_no')+'</span></div>';
+  }).join('');
+}
+
+// ---------- Init ----------
+document.addEventListener('DOMContentLoaded', function(){
+  initLang();
+  renderWorkers(_workers);
+  renderCalendar();
+  renderAvailCal();
+  renderProfile();
+  renderTables();
+
+  // Wire auth tabs (use unique IDs per page)
+  // worker-reg page
+  var wtr=document.getElementById('wTabR'), wtl=document.getElementById('wTabL');
+  var wfr=document.getElementById('wRegForm'), wfl=document.getElementById('wLoginForm');
+  if(wtr&&wtl&&wfr&&wfl){
+    wtr.addEventListener('click',function(){wtr.classList.add('active');wtl.classList.remove('active');wfr.style.display='block';wfl.style.display='none';});
+    wtl.addEventListener('click',function(){wtl.classList.add('active');wtr.classList.remove('active');wfl.style.display='block';wfr.style.display='none';});
+  }
+  // employer-reg page
+  var etr=document.getElementById('eTabR'), etl=document.getElementById('eTabL');
+  var efr=document.getElementById('eRegForm'), efl=document.getElementById('eLoginForm');
+  if(etr&&etl&&efr&&efl){
+    etr.addEventListener('click',function(){etr.classList.add('active');etl.classList.remove('active');efr.style.display='block';efl.style.display='none';});
+    etl.addEventListener('click',function(){etl.classList.add('active');etr.classList.remove('active');efl.style.display='block';efr.style.display='none';});
+  }
+
+  // Cal nav — profile page
+  var pm=document.getElementById('prevM'), nm=document.getElementById('nextM');
+  if(pm) pm.addEventListener('click',function(){_calDate.setMonth(_calDate.getMonth()-1);renderCalendar();});
+  if(nm) nm.addEventListener('click',function(){_calDate.setMonth(_calDate.getMonth()+1);renderCalendar();});
+
+  // Cal nav — availability page
+  var ap=document.getElementById('avPrev'), an=document.getElementById('avNext');
+  if(ap) ap.addEventListener('click',function(){_avCal.setMonth(_avCal.getMonth()-1);renderAvailCal();});
+  if(an) an.addEventListener('click',function(){_avCal.setMonth(_avCal.getMonth()+1);renderAvailCal();});
+
+  // Save availability
+  var sb=document.getElementById('saveBtn');
+  if(sb) sb.addEventListener('click',function(){
+    var msg=document.getElementById('savedMsg'); if(msg) msg.style.display='block';
+    sb.disabled=true; sb.textContent=t('avail_save').replace('✓','') + ' ✓';
+    setTimeout(function(){goTo('profile');},2000);
+  });
+
+  // Contact modal — search page
+  var cm=document.getElementById('searchModal');
+  var cc=document.getElementById('searchModalClose');
+  if(cc) cc.addEventListener('click',function(){if(cm) cm.classList.remove('open');});
+  if(cm) cm.addEventListener('click',function(e){if(e.target===cm) cm.classList.remove('open');});
+  var cf=document.getElementById('searchContactForm');
+  if(cf) cf.addEventListener('submit',function(e){e.preventDefault();cf.style.display='none';var ok=document.getElementById('searchOkMsg');if(ok)ok.style.display='block';});
+
+  // Contact modal — profile page
+  var pm2=document.getElementById('profileModal');
+  var po=document.getElementById('openModal'), pc=document.getElementById('closeModal');
+  if(po) po.addEventListener('click',function(){if(pm2) pm2.classList.add('open');});
+  if(pc) pc.addEventListener('click',function(){if(pm2) pm2.classList.remove('open');});
+  if(pm2) pm2.addEventListener('click',function(e){if(e.target===pm2) pm2.classList.remove('open');});
+  var pf=document.getElementById('contactForm');
+  if(pf) pf.addEventListener('submit',function(e){e.preventDefault();pf.style.display='none';var ok=document.getElementById('okMsg');if(ok)ok.style.display='block';});
+
+  // Worker reg submit
+  var wf=document.getElementById('wRegForm'); if(wf) wf.addEventListener('submit',function(e){e.preventDefault();goTo('profile');});
+  var wlf=document.getElementById('wLoginForm'); if(wlf) wlf.addEventListener('submit',function(e){e.preventDefault();goTo('profile');});
+  // Employer reg submit
+  var ef=document.getElementById('eRegForm'); if(ef) ef.addEventListener('submit',function(e){e.preventDefault();goTo('search');});
+  var elf=document.getElementById('eLoginForm'); if(elf) elf.addEventListener('submit',function(e){e.preventDefault();goTo('search');});
+
+  // Switch links
+  var tl1=document.getElementById('wToLogin'); if(tl1) tl1.addEventListener('click',function(e){e.preventDefault();var t=document.getElementById('wTabL');if(t)t.click();});
+  var tr1=document.getElementById('wToReg');   if(tr1) tr1.addEventListener('click',function(e){e.preventDefault();var t=document.getElementById('wTabR');if(t)t.click();});
+  var tl2=document.getElementById('eToLogin'); if(tl2) tl2.addEventListener('click',function(e){e.preventDefault();var t=document.getElementById('eTabL');if(t)t.click();});
+  var tr2=document.getElementById('eToReg');   if(tr2) tr2.addEventListener('click',function(e){e.preventDefault();var t=document.getElementById('eTabR');if(t)t.click();});
+});
+
+
+// ── File upload handlers ─────────────────────────────────────────
+function handleFileUpload(input, type) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  if (type === 'cv') {
+    document.getElementById('cvFileName').textContent = '📄 ' + file.name;
+    document.getElementById('cvFileDisplay').style.display = 'block';
+    document.getElementById('cvUploadArea').style.borderColor = 'rgba(200,240,96,0.4)';
+  }
+}
+function handleDrop(event, type) {
+  event.preventDefault();
+  var dt = event.dataTransfer;
+  if (dt.files && dt.files[0]) {
+    if (type === 'cv') {
+      document.getElementById('cvFileName').textContent = '📄 ' + dt.files[0].name;
+      document.getElementById('cvFileDisplay').style.display = 'block';
+      document.getElementById('cvUploadArea').style.borderColor = 'rgba(200,240,96,0.4)';
+    }
+  }
+}
+function removeCv() {
+  document.getElementById('cvFileDisplay').style.display = 'none';
+  document.getElementById('cvFileInput').value = '';
+  document.getElementById('cvUploadArea').style.borderColor = 'var(--border2)';
+}
+function addCertificate(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var list = document.getElementById('certList');
+  if (list) {
+    var div = document.createElement('div');
+    div.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between';
+    div.innerHTML = '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">📜</span><span style="font-size:12px;color:var(--ink2)">' + file.name + '</span></div><span style="background:rgba(240,180,50,0.12);color:#f0b432;border-radius:100px;padding:2px 8px;font-size:10px">⏳ Tarkistetaan</span>';
+    list.appendChild(div);
+  }
+  input.value = '';
+}
+
+// ── Ratings ───────────────────────────────────────────────────────
+var _currentRating = 0;
+function setRating(n) {
+  _currentRating = n;
+  document.querySelectorAll('.star-btn').forEach(function(s, i) {
+    s.style.opacity = i < n ? '1' : '0.3';
+  });
+}
+function setSubRating(prefix, n) {
+  document.querySelectorAll('.sub-star.' + prefix).forEach(function(s, i) {
+    s.style.opacity = i < n ? '1' : '0.3';
+  });
+}
+function submitReview() {
+  if (_currentRating === 0) { alert('Valitse ensin arvosana (1–5 tähteä).'); return; }
+  alert('✅ Arvostelu lähetetty! Kiitos palautteestasi.');
+  goTo('employer-dashboard');
+}
+
+// ── Messaging ─────────────────────────────────────────────────────
+function sendMsg() {
+  var inp = document.getElementById('msgInput');
+  if (!inp || !inp.value.trim()) return;
+  var msgs = document.getElementById('chatMessages');
+  if (!msgs) return;
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:10px;justify-content:flex-end';
+  div.innerHTML = '<div style="max-width:75%"><div style="background:rgba(200,240,96,0.12);border:1px solid rgba(200,240,96,0.25);border-radius:12px 12px 4px 12px;padding:10px 13px;font-size:12px;color:var(--ink);line-height:1.6">' + inp.value + '</div><div style="font-size:10px;color:var(--ink4);margin-top:3px;text-align:right;padding-right:4px">nyt</div></div><div style="width:30px;height:30px;background:linear-gradient(135deg,#9060f0,#6030cc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">👩</div>';
+  msgs.appendChild(div);
+  inp.value = '';
+  msgs.scrollTop = msgs.scrollHeight;
+}
+function selectConv(n) {
+  [1,2,3].forEach(function(i) {
+    var el = document.getElementById('conv'+i);
+    if (el) { el.style.background = i===n ? 'rgba(200,240,96,0.06)' : ''; el.style.borderLeft = i===n ? '2px solid var(--lime)' : 'none'; }
+  });
+  var names = {1:'Mehiläinen Oy', 2:'HYKS', 3:'Folkhälsan'};
+  var cn = document.getElementById('chatName');
+  if (cn) cn.textContent = names[n] || 'Mehiläinen Oy';
+}
+
+// ── Notifications ─────────────────────────────────────────────────
+function markAllRead() {
+  document.querySelectorAll('.notif-item .unread-dot').forEach(function(d){d.remove();});
+  document.querySelectorAll('.notif-item').forEach(function(el){
+    el.style.borderColor = 'var(--border)';
+  });
+  alert('Kaikki ilmoitukset merkitty luetuksi.');
+}
+
+// ── Referral copy ─────────────────────────────────────────────────
+function copyRef() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText('lisaduuni.com/ref/ANNA2026');
+  }
+  alert('✅ Linkki kopioitu leikepöydälle!');
+}
+
+</script>
+
+<div class="page" id="page-worker-dashboard">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <span style="font-size:12px;color:var(--lime)">👤 Anna Mäkinen</span>
+    <a href="#" onclick="goTo('notifications');return false;" class="btn-outline" style="position:relative">
+      🔔 Ilmoitukset <span style="background:var(--lime);color:var(--bg);border-radius:100px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:4px">3</span>
+    </a>
+    <a href="#" onclick="goTo('home');return false;" class="btn-outline">Kirjaudu ulos</a>
+  </div>
+</nav>
+<div style="max-width:1100px;margin:0 auto;padding:32px 40px">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:4px">Oma hallintapaneeli</div>
+      <h1 style="font-family:var(--font-head);font-size:28px;font-weight:400;color:var(--ink)">Hei, Anna! 👋</h1>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" onclick="goTo('profile')">Näytä profiili</button>
+      <button class="btn-primary" onclick="goTo('availability')">Päivitä saatavuus</button>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">24</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Profiilisi katselut</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">8</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Yhteydenotot</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">4.8⭐</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Keskiarvosi</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">12</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Keikkaa tehty</div>
+    </div>
+  </div>
+
+  <!-- Main grid -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+    <!-- CV Upload -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+      <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">📄 CV / Ansioluettelo</h3>
+      <div id="cvUploadArea" style="border:2px dashed var(--border2);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s"
+           onclick="document.getElementById('cvFileInput').click()"
+           ondragover="event.preventDefault();this.style.borderColor='var(--lime)'"
+           ondragleave="this.style.borderColor='var(--border2)'"
+           ondrop="handleDrop(event,'cv')">
+        <div style="font-size:28px;margin-bottom:8px">📂</div>
+        <p style="font-size:12px;color:var(--ink3);margin-bottom:4px">Vedä CV tähän tai klikkaa ladataksesi</p>
+        <p style="font-size:10px;color:var(--ink4)">PDF, DOC, DOCX · Max 5 MB</p>
+      </div>
+      <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="handleFileUpload(this,'cv')"/>
+      <div id="cvFileDisplay" style="margin-top:10px;display:none">
+        <div style="background:rgba(200,240,96,0.08);border:1px solid rgba(200,240,96,0.2);border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:12px;color:var(--lime)" id="cvFileName">📄 cv_anna_makinen.pdf</span>
+          <button onclick="removeCv()" style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:14px">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate Uploads -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+      <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">🏅 Todistukset & Sertifikaatit</h3>
+      <div id="certList" style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🎓</span><span style="font-size:12px;color:var(--ink2)">Sairaanhoitaja AMK 2021</span></div>
+          <span style="background:rgba(200,240,96,0.1);color:var(--lime);border-radius:100px;padding:2px 8px;font-size:10px">✓ Vahvistettu</span>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🏥</span><span style="font-size:12px;color:var(--ink2)">Ensiapukoulutus 2023</span></div>
+          <span style="background:rgba(200,240,96,0.1);color:var(--lime);border-radius:100px;padding:2px 8px;font-size:10px">✓ Vahvistettu</span>
+        </div>
+      </div>
+      <button onclick="document.getElementById('certFileInput').click()" style="width:100%;padding:9px;background:transparent;border:1px dashed var(--border2);border-radius:8px;color:var(--ink3);font-size:12px;cursor:pointer;font-family:var(--font-body);transition:all 0.2s" onmouseover="this.style.borderColor='var(--lime)';this.style.color='var(--lime)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--ink3)'">+ Lisää todistus</button>
+      <input type="file" id="certFileInput" accept=".pdf,.jpg,.png" style="display:none" onchange="addCertificate(this)"/>
+    </div>
+  </div>
+
+  <!-- Bottom grid -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <!-- Ratings received -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+      <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">⭐ Saamasi arvostelut</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="font-size:12px;font-weight:500;color:var(--ink)">Mehiläinen Oy</span>
+            <span style="color:var(--lime);font-size:12px">⭐⭐⭐⭐⭐</span>
+          </div>
+          <p style="font-size:11px;color:var(--ink3);line-height:1.6">"Erittäin ammattitaitoinen ja luotettava sijainen. Suosittelemme lämpimästi!"</p>
+          <span style="font-size:10px;color:var(--ink4)">15.4.2026</span>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="font-size:12px;font-weight:500;color:var(--ink)">HYKS</span>
+            <span style="color:var(--lime);font-size:12px">⭐⭐⭐⭐⭐</span>
+          </div>
+          <p style="font-size:11px;color:var(--ink3);line-height:1.6">"Tuli ajoissa, toimi itsenäisesti. Ehdottomasti kutsumme uudelleen."</p>
+          <span style="font-size:10px;color:var(--ink4)">2.4.2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Referral system -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+      <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:6px">🎁 Kutsu kaveri — ansaitse</h3>
+      <p style="font-size:12px;color:var(--ink3);margin-bottom:14px;line-height:1.6">Kun kutsumasi kaveri rekisteröityy, molemmat saatte <strong style="color:var(--lime)">1 kk Premium-ominaisuudet ilmaiseksi</strong>.</p>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:11px;color:var(--lime);font-family:monospace">lisaduuni.com/ref/ANNA2026</span>
+        <button onclick="copyRef()" style="background:var(--lime);color:var(--bg);border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer">Kopioi</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-family:var(--font-head);font-size:20px;color:var(--lime)">3</div>
+          <div style="font-size:10px;color:var(--ink3)">Kutsuttu</div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-family:var(--font-head);font-size:20px;color:var(--lime)">2</div>
+          <div style="font-size:10px;color:var(--ink3)">Liittynyt</div>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px">
+          <div style="font-family:var(--font-head);font-size:20px;color:var(--lime)">2kk</div>
+          <div style="font-size:10px;color:var(--ink3)">Ansaittu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer>
+</div>
+
+<div class="page" id="page-employer-dashboard">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <span style="font-size:12px;color:var(--lime)">🏢 Mehiläinen Oy</span>
+    <a href="#" onclick="goTo('notifications');return false;" class="btn-outline" style="position:relative">
+      🔔 <span style="background:var(--lime);color:var(--bg);border-radius:100px;padding:1px 6px;font-size:10px;font-weight:700;margin-left:2px">5</span>
+    </a>
+    <a href="#" onclick="goTo('search');return false;" class="btn-primary">Hae sijaisia →</a>
+  </div>
+</nav>
+<div style="max-width:1100px;margin:0 auto;padding:32px 40px">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:4px">Työnantajan hallintapaneeli</div>
+      <h1 style="font-family:var(--font-head);font-size:28px;font-weight:400;color:var(--ink)">Mehiläinen Oy</h1>
+    </div>
+    <div style="background:rgba(200,240,96,0.08);border:1px solid rgba(200,240,96,0.2);border-radius:10px;padding:10px 16px;text-align:center">
+      <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;margin-bottom:2px">Nykyinen paketti</div>
+      <div style="font-size:14px;font-weight:600;color:var(--lime)">Pro — €99/kk</div>
+      <div style="font-size:10px;color:var(--ink4);margin-top:2px">Uusitaan 1.6.2026</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">47</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Hakua tehty</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">18</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Yhteydenottoa</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">9</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Buukausta</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-family:var(--font-head);font-size:30px;color:var(--lime)">∞</div>
+      <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;margin-top:4px">Kontaktia jäljellä</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+    <!-- Recent bookings -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+      <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">📅 Viimeisimmät buukaukset</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--ink)">Anna Mäkinen</div>
+            <div style="font-size:11px;color:var(--ink3)">Sairaanhoitaja · 2.5.2026</div>
+          </div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:3px 10px;border-radius:100px;font-size:10px;font-weight:500">✓ Vahvistettu</span>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--ink)">Mikko Korhonen</div>
+            <div style="font-size:11px;color:var(--ink3)">Lähihoitaja · 5.5.2026</div>
+          </div>
+          <span style="background:rgba(240,180,50,0.12);color:#f0b432;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:500">⏳ Odottaa</span>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:12px;font-weight:500;color:var(--ink)">Sara Leinonen</div>
+            <div style="font-size:11px;color:var(--ink3)">Fysioterapeutti · 8.5.2026</div>
+          </div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:3px 10px;border-radius:100px;font-size:10px;font-weight:500">✓ Vahvistettu</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saved profiles -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+      <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">🔖 Tallennetut profiilit</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer" onclick="goTo('profile')">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">👩</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--ink)">Anna Mäkinen</div><div style="font-size:11px;color:var(--ink3)">Sairaanhoitaja · Helsinki · ⭐ 4.8</div></div>
+          <button class="btn-outline" style="font-size:11px;padding:5px 10px" onclick="event.stopPropagation();goTo('messaging')">Viesti</button>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,#6080f0,#3c5acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">👨</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--ink)">Mikko Korhonen</div><div style="font-size:11px;color:var(--ink3)">Lähihoitaja · Espoo · ⭐ 4.6</div></div>
+          <button class="btn-outline" style="font-size:11px;padding:5px 10px" onclick="goTo('messaging')">Viesti</button>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;display:flex;align-items:center;gap:12px">
+          <div style="width:36px;height:36px;background:linear-gradient(135deg,#f0a060,#cc7832);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">👩</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--ink)">Sara Leinonen</div><div style="font-size:11px;color:var(--ink3)">Fysioterapeutti · Helsinki · ⭐ 4.9</div></div>
+          <button class="btn-outline" style="font-size:11px;padding:5px 10px" onclick="goTo('messaging')">Viesti</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking confirmation -->
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
+    <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">📋 Uusi buukaus</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
+      <div>
+        <label style="font-size:11px;color:var(--ink3);display:block;margin-bottom:4px">Työntekijä</label>
+        <select style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--ink);font-size:12px;font-family:var(--font-body)">
+          <option>Anna Mäkinen</option><option>Mikko Korhonen</option><option>Sara Leinonen</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--ink3);display:block;margin-bottom:4px">Päivämäärä</label>
+        <input type="date" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--ink);font-size:12px;font-family:var(--font-body)"/>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--ink3);display:block;margin-bottom:4px">Kellonaika</label>
+        <input type="time" style="width:100%;padding:8px 10px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--ink);font-size:12px;font-family:var(--font-body)" value="08:00"/>
+      </div>
+      <button class="btn-primary" onclick="alert('Buukaus lähetetty! Työntekijä vahvistaa pian.')">Lähetä pyyntö →</button>
+    </div>
+  </div>
+
+</div>
+<footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer>
+</div>
+
+<div class="page" id="page-messaging">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <a href="#" onclick="goTo('worker-dashboard');return false;" class="btn-outline">← Takaisin</a>
+  </div>
+</nav>
+<div style="max-width:1000px;margin:0 auto;padding:28px 40px">
+  <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px">Viestit</div>
+  <h1 style="font-family:var(--font-head);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:20px">Keskustelut</h1>
+
+  <div style="display:grid;grid-template-columns:280px 1fr;gap:0;background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;height:520px">
+
+    <!-- Conversation list -->
+    <div style="border-right:1px solid var(--border);display:flex;flex-direction:column">
+      <div style="padding:14px;border-bottom:1px solid var(--border)">
+        <input type="text" placeholder="Etsi keskusteluja..." style="width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--ink);font-family:var(--font-body);outline:none;box-sizing:border-box"/>
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        <div id="conv1" onclick="selectConv(1)" style="padding:14px;cursor:pointer;border-bottom:1px solid var(--border);background:rgba(200,240,96,0.06);border-left:2px solid var(--lime)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:13px;font-weight:500;color:var(--ink)">Mehiläinen Oy</span>
+            <span style="font-size:10px;color:var(--ink4)">14:32</span>
+          </div>
+          <div style="font-size:11px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Olisiko sinulla mahdollisuus tulla...</div>
+          <span style="background:var(--lime);color:var(--bg);border-radius:100px;padding:1px 6px;font-size:9px;font-weight:700;margin-top:4px;display:inline-block">2</span>
+        </div>
+        <div id="conv2" onclick="selectConv(2)" style="padding:14px;cursor:pointer;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:13px;font-weight:500;color:var(--ink)">HYKS</span>
+            <span style="font-size:10px;color:var(--ink4)">Eilen</span>
+          </div>
+          <div style="font-size:11px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Kiitos erinomaisesta työstä!</div>
+        </div>
+        <div id="conv3" onclick="selectConv(3)" style="padding:14px;cursor:pointer;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+            <span style="font-size:13px;font-weight:500;color:var(--ink)">Folkhälsan</span>
+            <span style="font-size:10px;color:var(--ink4)">27.4.</span>
+          </div>
+          <div style="font-size:11px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Hei, olemme kiinnostuneita...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat area -->
+    <div style="display:flex;flex-direction:column">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px">🏥</div>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink)" id="chatName">Mehiläinen Oy</div>
+          <div style="font-size:11px;color:var(--lime)">● Paikalla nyt</div>
+        </div>
+      </div>
+
+      <div id="chatMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px">
+          <div style="width:30px;height:30px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">🏥</div>
+          <div style="max-width:75%">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px 12px 12px 4px;padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.6">Hei Anna! Olisiko sinulla mahdollisuus tulla meille töihin perjantaina 3.5? Tarvitsisimme sijaisen aamuvuoroon klo 07–15.</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:3px;padding-left:4px">14:30</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <div style="max-width:75%">
+            <div style="background:rgba(200,240,96,0.12);border:1px solid rgba(200,240,96,0.25);border-radius:12px 12px 4px 12px;padding:10px 13px;font-size:12px;color:var(--ink);line-height:1.6">Hei! Kyllä, perjantai onnistuu! Olen vapaa koko päivän. Mikä osasto?</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:3px;text-align:right;padding-right:4px">14:32</div>
+          </div>
+          <div style="width:30px;height:30px;background:linear-gradient(135deg,#9060f0,#6030cc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">👩</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div style="width:30px;height:30px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">🏥</div>
+          <div style="max-width:75%">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px 12px 12px 4px;padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.6">Mahtavaa! Kirurgian vuodeosasto 6A. Lähetän vahvistuksen sähköpostilla. Palkkaus TES:n mukainen 18,50€/h.</div>
+            <div style="font-size:10px;color:var(--ink4);margin-top:3px;padding-left:4px">14:35</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+        <input type="text" id="msgInput" placeholder="Kirjoita viesti..." style="flex:1;padding:10px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-pill);font-size:12px;color:var(--ink);font-family:var(--font-body);outline:none" onkeydown="if(event.key==='Enter')sendMsg()"/>
+        <button onclick="sendMsg()" style="background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);padding:10px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">Lähetä →</button>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer>
+</div>
+
+<div class="page" id="page-notifications">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <a href="#" onclick="goTo('worker-dashboard');return false;" class="btn-outline">← Takaisin</a>
+  </div>
+</nav>
+<div style="max-width:680px;margin:0 auto;padding:32px 40px">
+  <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px">Ilmoitukset</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+    <h1 style="font-family:var(--font-head);font-size:26px;font-weight:400;color:var(--ink)">Kaikki ilmoitukset</h1>
+    <button onclick="markAllRead()" style="background:transparent;border:1px solid var(--border2);border-radius:var(--radius-pill);padding:7px 14px;font-size:11px;color:var(--ink3);cursor:pointer;font-family:var(--font-body)">Merkitse kaikki luetuksi</button>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px" id="notifList">
+    <div class="notif-item unread" style="background:var(--bg2);border:1px solid rgba(200,240,96,0.25);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;cursor:pointer" onclick="goTo('messaging')">
+      <div style="width:40px;height:40px;background:rgba(200,240,96,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💬</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:13px;font-weight:500;color:var(--ink)">Uusi viesti — Mehiläinen Oy</span>
+          <span style="font-size:10px;color:var(--lime)">juuri nyt</span>
+        </div>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.5">"Olisiko sinulla mahdollisuus tulla meille perjantaina 3.5?"</p>
+      </div>
+      <div style="width:8px;height:8px;background:var(--lime);border-radius:50%;flex-shrink:0;margin-top:5px"></div>
+    </div>
+    <div class="notif-item unread" style="background:var(--bg2);border:1px solid rgba(200,240,96,0.25);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;cursor:pointer">
+      <div style="width:40px;height:40px;background:rgba(96,180,240,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⭐</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:13px;font-weight:500;color:var(--ink)">HYKS jätti arvostelun</span>
+          <span style="font-size:10px;color:var(--ink4)">2h sitten</span>
+        </div>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.5">Sait arvosanan ⭐⭐⭐⭐⭐ keikasta 28.4.2026</p>
+      </div>
+      <div style="width:8px;height:8px;background:var(--lime);border-radius:50%;flex-shrink:0;margin-top:5px"></div>
+    </div>
+    <div class="notif-item unread" style="background:var(--bg2);border:1px solid rgba(200,240,96,0.25);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;cursor:pointer">
+      <div style="width:40px;height:40px;background:rgba(240,160,96,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👁️</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:13px;font-weight:500;color:var(--ink)">Profiilisi katsottiin</span>
+          <span style="font-size:10px;color:var(--ink4)">5h sitten</span>
+        </div>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.5">Folkhälsan katsoi profiilisi. Voisit ottaa yhteyttä!</p>
+      </div>
+      <div style="width:8px;height:8px;background:var(--lime);border-radius:50%;flex-shrink:0;margin-top:5px"></div>
+    </div>
+    <div class="notif-item" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start;cursor:pointer">
+      <div style="width:40px;height:40px;background:rgba(200,240,96,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎁</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:13px;font-weight:500;color:var(--ink)">Suosituksesi liittyi!</span>
+          <span style="font-size:10px;color:var(--ink4)">Eilen</span>
+        </div>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.5">Liisa Virtanen rekisteröityi suosituksellasi. Sait 1 kk ilmaiskuukauden!</p>
+      </div>
+    </div>
+    <div class="notif-item" style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:14px;align-items:flex-start">
+      <div style="width:40px;height:40px;background:rgba(200,96,240,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📅</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:13px;font-weight:500;color:var(--ink)">Muistutus — päivitä saatavuus</span>
+          <span style="font-size:10px;color:var(--ink4)">27.4.2026</span>
+        </div>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.5">Et ole päivittänyt saatavuuttasi 7 päivään. Työnantajat katsovat aktiivisia profiileja ensin.</p>
+        <button onclick="goTo('availability')" class="btn-primary" style="margin-top:8px;padding:6px 14px;font-size:11px">Päivitä nyt →</button>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer>
+</div>
+
+<div class="page" id="page-ratings">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <a href="#" onclick="goTo('employer-dashboard');return false;" class="btn-outline">← Takaisin</a>
+  </div>
+</nav>
+<div style="max-width:720px;margin:0 auto;padding:32px 40px">
+  <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px">Arvostelut</div>
+  <h1 style="font-family:var(--font-head);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:8px">Arvioi työntekijä</h1>
+  <p style="font-size:13px;color:var(--ink3);margin-bottom:24px">Arvostelut auttavat muita työnantajia ja parantavat alustan laatua.</p>
+
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px">👩</div>
+      <div>
+        <div style="font-size:15px;font-weight:500;color:var(--ink)">Anna Mäkinen</div>
+        <div style="font-size:12px;color:var(--ink3)">Sairaanhoitaja · Keikka 28.4.2026</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--ink2);display:block;margin-bottom:8px">Yleisarvosana</label>
+      <div style="display:flex;gap:8px" id="starRating">
+        <span onclick="setRating(1)" class="star-btn" style="font-size:28px;cursor:pointer;opacity:0.3;transition:opacity 0.15s">⭐</span>
+        <span onclick="setRating(2)" class="star-btn" style="font-size:28px;cursor:pointer;opacity:0.3;transition:opacity 0.15s">⭐</span>
+        <span onclick="setRating(3)" class="star-btn" style="font-size:28px;cursor:pointer;opacity:0.3;transition:opacity 0.15s">⭐</span>
+        <span onclick="setRating(4)" class="star-btn" style="font-size:28px;cursor:pointer;opacity:0.3;transition:opacity 0.15s">⭐</span>
+        <span onclick="setRating(5)" class="star-btn" style="font-size:28px;cursor:pointer;opacity:0.3;transition:opacity 0.15s">⭐</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <label style="font-size:11px;color:var(--ink3);display:block;margin-bottom:5px">Täsmällisyys</label>
+        <div style="display:flex;gap:4px">
+          <span onclick="setSubRating('t',1)" class="sub-star t" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('t',2)" class="sub-star t" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('t',3)" class="sub-star t" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('t',4)" class="sub-star t" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('t',5)" class="sub-star t" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--ink3);display:block;margin-bottom:5px">Ammattitaito</label>
+        <div style="display:flex;gap:4px">
+          <span onclick="setSubRating('a',1)" class="sub-star a" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('a',2)" class="sub-star a" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('a',3)" class="sub-star a" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('a',4)" class="sub-star a" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+          <span onclick="setSubRating('a',5)" class="sub-star a" style="font-size:18px;cursor:pointer;opacity:0.3">⭐</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label style="font-size:12px;color:var(--ink2);display:block;margin-bottom:6px">Kirjallinen palaute</label>
+      <textarea id="reviewText" placeholder="Kerro kokemuksestasi..." style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;color:var(--ink);font-size:12px;font-family:var(--font-body);outline:none;resize:vertical;min-height:80px;box-sizing:border-box"></textarea>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <input type="checkbox" id="recCheck" style="accent-color:var(--lime);width:14px;height:14px"/>
+      <label for="recCheck" style="font-size:12px;color:var(--ink2)">Suosittelen tätä työntekijää muille työnantajille</label>
+    </div>
+
+    <button class="btn-primary" style="width:100%;padding:12px" onclick="submitReview()">Lähetä arvostelu →</button>
+  </div>
+</div>
+<footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer>
+</div>
+
+<div class="page" id="page-mapview">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <a href="#" onclick="goTo('search');return false;" class="btn-outline">← Hakuun</a>
+  </div>
+</nav>
+<div style="max-width:1100px;margin:0 auto;padding:28px 40px">
+  <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px">Karttanäkymä</div>
+  <h1 style="font-family:var(--font-head);font-size:26px;font-weight:400;color:var(--ink);margin-bottom:16px">Saatavilla olevat sijaiset kartalla</h1>
+
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:16px;height:540px">
+    <!-- Map -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative">
+      <svg viewBox="0 0 700 480" style="width:100%;height:100%">
+        <defs>
+          <radialGradient id="mapGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#1a2a0a" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#080a05" stop-opacity="1"/>
+          </radialGradient>
+        </defs>
+        <rect width="700" height="480" fill="url(#mapGlow)"/>
+        <!-- Finland simplified outline -->
+        <path d="M240,40 L270,30 L320,45 L360,35 L400,50 L440,70 L460,100 L470,130 L460,165 L480,190 L490,225 L480,260 L470,290 L450,310 L430,330 L400,350 L380,375 L360,395 L340,420 L320,440 L300,450 L280,440 L260,420 L240,400 L220,375 L200,350 L190,315 L180,280 L185,245 L190,210 L200,175 L210,145 L215,115 L220,85 L230,60 Z" fill="none" stroke="rgba(200,240,96,0.15)" stroke-width="1.5"/>
+        <!-- City dots -->
+        <g>
+          <!-- Helsinki -->
+          <circle cx="330" cy="405" r="22" fill="rgba(200,240,96,0.12)" stroke="rgba(200,240,96,0.4)" stroke-width="1"/>
+          <circle cx="330" cy="405" r="8" fill="var(--lime)" opacity="0.9"/>
+          <text x="330" y="438" text-anchor="middle" fill="rgba(200,240,96,0.85)" font-size="10" font-family="Geist,sans-serif">Helsinki</text>
+          <text x="330" y="450" text-anchor="middle" fill="rgba(200,240,96,0.55)" font-size="9" font-family="Geist,sans-serif">184 saatavilla</text>
+          <!-- Tampere -->
+          <circle cx="290" cy="320" r="16" fill="rgba(200,240,96,0.08)" stroke="rgba(200,240,96,0.3)" stroke-width="1"/>
+          <circle cx="290" cy="320" r="6" fill="var(--lime)" opacity="0.7"/>
+          <text x="260" y="318" text-anchor="end" fill="rgba(200,240,96,0.75)" font-size="10" font-family="Geist,sans-serif">Tampere</text>
+          <text x="260" y="328" text-anchor="end" fill="rgba(200,240,96,0.45)" font-size="9" font-family="Geist,sans-serif">97 saatavilla</text>
+          <!-- Turku -->
+          <circle cx="240" cy="375" r="13" fill="rgba(200,240,96,0.07)" stroke="rgba(200,240,96,0.25)" stroke-width="1"/>
+          <circle cx="240" cy="375" r="5" fill="var(--lime)" opacity="0.6"/>
+          <text x="215" y="372" text-anchor="end" fill="rgba(200,240,96,0.65)" font-size="10" font-family="Geist,sans-serif">Turku 68</text>
+          <!-- Oulu -->
+          <circle cx="340" cy="175" r="13" fill="rgba(200,240,96,0.07)" stroke="rgba(200,240,96,0.25)" stroke-width="1"/>
+          <circle cx="340" cy="175" r="5" fill="var(--lime)" opacity="0.6"/>
+          <text x="362" y="178" fill="rgba(200,240,96,0.65)" font-size="10" font-family="Geist,sans-serif">Oulu 54</text>
+          <!-- Kuopio -->
+          <circle cx="390" cy="265" r="11" fill="rgba(200,240,96,0.06)" stroke="rgba(200,240,96,0.2)" stroke-width="1"/>
+          <circle cx="390" cy="265" r="4" fill="var(--lime)" opacity="0.5"/>
+          <text x="408" y="268" fill="rgba(200,240,96,0.55)" font-size="9" font-family="Geist,sans-serif">Kuopio 41</text>
+          <!-- Jyväskylä -->
+          <circle cx="320" cy="295" r="10" fill="rgba(200,240,96,0.06)" stroke="rgba(200,240,96,0.2)" stroke-width="1"/>
+          <circle cx="320" cy="295" r="4" fill="var(--lime)" opacity="0.5"/>
+          <text x="338" y="298" fill="rgba(200,240,96,0.5)" font-size="9" font-family="Geist,sans-serif">Jyväskylä 37</text>
+        </g>
+        <!-- Legend -->
+        <rect x="16" y="16" width="120" height="52" rx="8" fill="rgba(0,0,0,0.5)" stroke="rgba(200,240,96,0.15)" stroke-width="1"/>
+        <circle cx="32" cy="32" r="5" fill="var(--lime)" opacity="0.9"/>
+        <text x="44" y="36" fill="rgba(200,240,96,0.8)" font-size="9" font-family="Geist,sans-serif">Paljon saatavilla</text>
+        <circle cx="32" cy="52" r="3" fill="var(--lime)" opacity="0.5"/>
+        <text x="44" y="56" fill="rgba(200,240,96,0.5)" font-size="9" font-family="Geist,sans-serif">Vähän saatavilla</text>
+      </svg>
+      <div style="position:absolute;bottom:14px;right:14px;display:flex;gap:8px">
+        <button onclick="goTo('search')" class="btn-primary" style="font-size:11px;padding:7px 14px">Listanäkymä ☰</button>
+      </div>
+    </div>
+
+    <!-- City list -->
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;overflow-y:auto">
+      <h3 style="font-family:var(--font-head);font-size:14px;font-weight:400;color:var(--ink);margin-bottom:12px">Saatavuus kaupungeittain</h3>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">🏙️ Helsinki</div><div style="font-size:10px;color:var(--ink3)">Uusimaa</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">184</span>
+        </div>
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">🌆 Tampere</div><div style="font-size:10px;color:var(--ink3)">Pirkanmaa</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">97</span>
+        </div>
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">⚓ Turku</div><div style="font-size:10px;color:var(--ink3)">Varsinais-Suomi</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">68</span>
+        </div>
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">🌊 Oulu</div><div style="font-size:10px;color:var(--ink3)">Pohjois-Pohjanmaa</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">54</span>
+        </div>
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">🏔️ Kuopio</div><div style="font-size:10px;color:var(--ink3)">Pohjois-Savo</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">41</span>
+        </div>
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">🌳 Jyväskylä</div><div style="font-size:10px;color:var(--ink3)">Keski-Suomi</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">37</span>
+        </div>
+        <div onclick="goTo('search')" style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;cursor:pointer" onmouseover="this.style.borderColor='rgba(200,240,96,0.35)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div><div style="font-size:12px;font-weight:500;color:var(--ink)">🏭 Lahti</div><div style="font-size:10px;color:var(--ink3)">Päijät-Häme</div></div>
+          <span style="background:rgba(200,240,96,0.12);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:11px;font-weight:600">29</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span></footer>
+</div>
+
+</body>
+</html>
