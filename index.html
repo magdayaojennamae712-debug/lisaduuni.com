@@ -1941,7 +1941,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var wf=document.getElementById('wRegForm'); if(wf) wf.addEventListener('submit',function(e){e.preventDefault();goTo('profile');});
   var wlf=document.getElementById('wLoginForm'); if(wlf) wlf.addEventListener('submit',function(e){e.preventDefault();goTo('profile');});
   // Employer reg submit
-  var ef=document.getElementById('eRegForm'); if(ef) ef.addEventListener('submit',function(e){e.preventDefault();goTo('search');});
+  var ef=document.getElementById('eRegForm'); if(ef) ef.addEventListener('submit',function(e){e.preventDefault();registerEmployer();});
   var elf=document.getElementById('eLoginForm'); if(elf) elf.addEventListener('submit',function(e){e.preventDefault();goTo('search');});
 
   // Switch links
@@ -2132,6 +2132,42 @@ function loginDemo() {
   setTimeout(function() {
     goTo('employer-dashboard');
   }, 600);
+}
+
+
+// Employer registration → welcome page
+function registerEmployer() {
+  // Get company name from form
+  var nameEl = document.querySelector('#eRegForm input[type="text"]');
+  var companyName = nameEl ? nameEl.value : 'Yritys';
+  
+  // Update welcome page company name
+  var wName = document.getElementById('welcomeCompanyName');
+  if (wName) wName.textContent = '🏢 ' + companyName;
+
+  // Update employer dashboard company name
+  var dashName = document.querySelector('#page-employer-dashboard h1');
+  if (dashName) dashName.textContent = companyName;
+
+  // Show success then redirect to welcome page
+  goTo('employer-welcome');
+  
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+
+// Worker registration → worker dashboard
+function registerWorker() {
+  var nameEl = document.querySelector('#wRegForm input[type="text"]');
+  var workerName = nameEl ? nameEl.value : 'Uusi käyttäjä';
+  
+  // Update worker dashboard greeting
+  var greeting = document.querySelector('#page-worker-dashboard h1');
+  if (greeting) greeting.textContent = 'Hei, ' + workerName.split(' ')[0] + '! 👋';
+  
+  goTo('worker-dashboard');
+  window.scrollTo(0, 0);
 }
 
 </script>
@@ -3077,6 +3113,79 @@ function loginDemo() {
 </section>
 
 <footer class="footer"><a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a><span class="footer-copy">© 2026 Lisaduuni.com</span><div class="footer-links"><a href="#" onclick="goTo('gdpr');return false;">Tietosuoja</a><a href="#" onclick="goTo('blog');return false;">Blogi</a><a href="#" onclick="goTo('pricing');return false;">Hinnoittelu</a></div></footer>
+</div>
+
+
+<div class="page" id="page-employer-welcome">
+<nav class="nav">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <div class="nav-links">
+    <span style="font-size:12px;color:var(--lime)" id="welcomeCompanyName">🏢 Tervetuloa!</span>
+    <a href="#" onclick="goTo('employer-dashboard');return false;" class="btn-primary">Siirry hallintapaneeliin →</a>
+  </div>
+</nav>
+
+<div style="max-width:680px;margin:0 auto;padding:48px 40px;text-align:center">
+
+  <!-- Success animation -->
+  <div style="width:80px;height:80px;background:rgba(200,240,96,0.12);border:2px solid rgba(200,240,96,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px">🎉</div>
+
+  <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.12em;font-weight:600;margin-bottom:10px">Tili luotu onnistuneesti!</div>
+  <h1 style="font-family:var(--font-head);font-size:34px;font-weight:400;color:var(--ink);margin-bottom:10px">Tervetuloa Lisaduuni.com-palveluun!</h1>
+  <p style="font-size:14px;color:var(--ink3);line-height:1.7;margin-bottom:36px;font-weight:300">Tilisi on nyt aktiivinen. Voit alkaa etsiä sijaisia välittömästi.<br>Tässä muutama nopea vinkki alkuun pääsemiseksi.</p>
+
+  <!-- 3 quick start steps -->
+  <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px;text-align:left">
+
+    <div onclick="goTo('search')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;background:rgba(200,240,96,0.1);border:1px solid rgba(200,240,96,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🔍</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px">Askel 1 — Hae sijaisia nyt</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.5">Suodata alan, kaupungin ja saatavuuden mukaan. Yli 1 200 sijaista saatavilla.</div>
+      </div>
+      <span style="color:var(--lime);font-size:18px">→</span>
+    </div>
+
+    <div onclick="goTo('messaging')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;background:rgba(96,180,240,0.1);border:1px solid rgba(96,180,240,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">💬</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px">Askel 2 — Lähetä viesti sijaiselle</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.5">Ota yhteyttä suoraan — ei sähköpostia, ei puheluita. Kaikki yhdessä paikassa.</div>
+      </div>
+      <span style="color:var(--lime);font-size:18px">→</span>
+    </div>
+
+    <div onclick="goTo('employer-dashboard')" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="width:44px;height:44px;background:rgba(200,96,240,0.1);border:1px solid rgba(200,96,240,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📊</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px">Askel 3 — Tutki hallintapaneelisi</div>
+        <div style="font-size:12px;color:var(--ink3);line-height:1.5">Seuraa buukauksia, viestejä ja tallennettuja profiileja yhdestä paikasta.</div>
+      </div>
+      <span style="color:var(--lime);font-size:18px">→</span>
+    </div>
+  </div>
+
+  <!-- Plan reminder -->
+  <div style="background:rgba(200,240,96,0.06);border:1px solid rgba(200,240,96,0.2);border-radius:14px;padding:20px;margin-bottom:28px">
+    <div style="font-size:11px;color:var(--lime);text-transform:uppercase;letter-spacing:0.1em;font-weight:500;margin-bottom:6px">Nykyinen pakettisi</div>
+    <div style="font-family:var(--font-head);font-size:22px;color:var(--ink);margin-bottom:4px">Starter — 14 pv ilmainen kokeilu</div>
+    <div style="font-size:12px;color:var(--ink3)">Sisältää 10 yhteydenottoa / kk. Päivitä koska tahansa.</div>
+    <button onclick="goTo('tyonantajille')" class="btn-outline" style="margin-top:12px;padding:8px 18px;font-size:12px">Katso kaikki paketit →</button>
+  </div>
+
+  <!-- Main CTA -->
+  <button class="btn-primary" style="padding:14px 36px;font-size:15px;width:100%;max-width:340px" onclick="goTo('search')">
+    🔍 Hae sijaisia nyt →
+  </button>
+  <div style="margin-top:12px">
+    <a href="#" onclick="goTo('employer-dashboard');return false;" style="font-size:12px;color:var(--ink3);text-decoration:none">Siirry ensin hallintapaneeliin ↗</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <a href="#" onclick="goTo('home');return false;" class="nav-logo">Lisaduuni<span>.com</span></a>
+  <span class="footer-copy">© 2026 Lisaduuni.com</span>
+</footer>
 </div>
 
 </body>
