@@ -1662,6 +1662,7 @@ document.addEventListener('DOMContentLoaded', initLang);
 function goTo(pageId) { if(typeof trackPage==='function') trackPage(pageId);
   if(pageId==='admin'){setTimeout(function(){if(typeof updateAdminOverviewStats==='function')updateAdminOverviewStats();if(typeof showTab==='function')showTab('overview');},50);}
   if(pageId==='worker-dashboard'){setTimeout(function(){if(typeof updateWorkerDashboard==='function')updateWorkerDashboard();},50);}
+  if(pageId==='availability'){setTimeout(function(){if(typeof loadWorkerAvailability==='function')loadWorkerAvailability();},50);}
   if(pageId==='employer-dashboard'){setTimeout(function(){if(typeof updateEmployerDashboard==='function')updateEmployerDashboard();},50);}
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   var t = document.getElementById('page-' + pageId);
@@ -1905,26 +1906,45 @@ function renderCalendar(){
 // Availability page calendar (editable)
 var _avCal = new Date(2026,4,1);
 var _avSel = new Set([1,2,4,5,8,9,10,12,15,16,19,20,22,23,26,27,29,30]);
+var _avShiftTimes = {};
 
 function renderAvailCal(){
   var g=document.getElementById('avCalGrid'); if(!g) return;
   var months=t('months'), days=t('days_short');
   var tEl=document.getElementById('avCalTitle'); if(tEl) tEl.textContent=months[_avCal.getMonth()]+' '+_avCal.getFullYear();
   g.innerHTML='';
+  // Day headers
   days.forEach(function(d){var e=document.createElement('div');e.className='cal-day-name';e.textContent=d;g.appendChild(e);});
+  // Empty offset cells
   var first=new Date(_avCal.getFullYear(),_avCal.getMonth(),1).getDay();
   var off=(first===0)?6:first-1;
   for(var i=0;i<off;i++){var e=document.createElement('div');e.className='cal-day empty';g.appendChild(e);}
+  // Day cells
   var total=new Date(_avCal.getFullYear(),_avCal.getMonth()+1,0).getDate();
+  var today=new Date();
   for(var d=1;d<=total;d++){
     (function(day){
+      var isAvail=_avSel.has(day);
       var el=document.createElement('div');
-      el.className='cal-day'+(_avSel.has(day)?' available':'');
-      el.textContent=day;
-      el.addEventListener('click',function(){
-        _avSel.has(day)?_avSel.delete(day):_avSel.add(day);
-        el.classList.toggle('available');
-        var sc=document.getElementById('selCount'); if(sc) sc.textContent=_avSel.size;
+      el.className='cal-day'+(isAvail?' available':'');
+      el.style.cursor='pointer';
+      if(_avCal.getMonth()===today.getMonth()&&_avCal.getFullYear()===today.getFullYear()&&day===today.getDate()) el.classList.add('today');
+      // Day number
+      var numSpan=document.createElement('span');
+      numSpan.className='cal-day-num';
+      numSpan.textContent=day;
+      el.appendChild(numSpan);
+      // Shift time badge
+      var shift=_avShiftTimes[day];
+      if(isAvail && shift){
+        var shiftBadge=document.createElement('span');
+        shiftBadge.className='cal-shift';
+        shiftBadge.textContent=shift;
+        el.appendChild(shiftBadge);
+      }
+      // Click → open shift picker
+      el.addEventListener('click', function(){
+        openAvailShiftPicker(day, el);
       });
       g.appendChild(el);
     })(d);
@@ -2987,182 +3007,16 @@ function updateUIForUser(user) {
 }
 
 // ── EMPLOYER REGISTRATION ─────────────────────────────────────────
-function registerNewEmployer(e) {
-  if (e) e.preventDefault();
-  
-  var form = document.getElementById('eRegForm');
-  if (!form) return;
-  
-  var inputs = form.querySelectorAll('input, select, textarea');
-  var data = {};
-  inputs.forEach(function(inp) {
-    if (inp.name) data[inp.name] = inp.value;
-  });
-  
-  // Get form fields by position
-  var allInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], select, textarea, input[type="password"]');
-  var company = allInputs[0] ? allInputs[0].value : '';
-  var businessId = allInputs[1] ? allInputs[1].value : '';
-  var industry = form.querySelector('select') ? form.querySelector('select').value : '';
-  var city = form.querySelectorAll('select')[1] ? form.querySelectorAll('select')[1].value : '';
-  var contact = form.querySelector('input[type="text"]:nth-of-type(3)') ? form.querySelector('input[type="text"]:nth-of-type(3)').value : '';
-  var email = form.querySelector('input[type="email"]') ? form.querySelector('input[type="email"]').value : '';
-  var phone = form.querySelector('input[type="tel"]') ? form.querySelector('input[type="tel"]').value : '';
-  
-  // Simple validation
-  if (!company || !email) {
-    alert(currentLang === 'en' ? 'Please fill in company name and email.' : 'Täytä yrityksen nimi ja sähköposti.');
-    return;
-  }
-  
-  // Create user object
-  var user = {
-    type: 'employer',
-    company: company,
-    businessId: businessId,
-    industry: industry,
-    city: city,
-    contact: contact,
-    email: email,
-    phone: phone,
-    plan: 'Starter',
-    planPrice: '€39',
-    trialDays: 14,
-    registeredAt: new Date().toISOString(),
-    bookings: [],
-    savedProfiles: [],
-    messages: []
-  };
-  
-  saveUser(user);
-  
-  // Save to accounts registry
-  saveToAccounts(user);
-  
-  // Navigate to welcome page
-  goTo('employer-welcome');
-}
+
 
 // ── EMPLOYER LOGIN ────────────────────────────────────────────────
-function loginEmployer(e) {
-  if (e) e.preventDefault();
-  
-  var form = document.getElementById('eLoginForm');
-  if (!form) return;
-  
-  var email = form.querySelector('input[type="email"]') ? form.querySelector('input[type="email"]').value.trim() : '';
-  var pass = form.querySelector('input[type="password"]') ? form.querySelector('input[type="password"]').value : '';
-  
-  // Check admin
-  if (checkAdminLogin(email, pass)) {
-    _isAdminLoggedIn = true;
-    goTo('admin');
-    return;
-  }
-  
-  // Check registered accounts
-  var accounts = getAccounts();
-  var found = accounts.find(function(a) { 
-    return a.email && a.email.toLowerCase() === email.toLowerCase() && a.type === 'employer'; 
-  });
-  
-  if (found) {
-    saveUser(found);
-    goTo('employer-welcome');
-    return;
-  }
-  
-  // If no account found, create session anyway (demo mode)
-  if (email) {
-    var user = { type: 'employer', company: email.split('@')[0], email: email, plan: 'Starter', planPrice: '€39' };
-    saveUser(user);
-    goTo('employer-welcome');
-  }
-}
+
 
 // ── WORKER REGISTRATION ───────────────────────────────────────────
-function registerNewWorker(e) {
-  if (e) e.preventDefault();
-  
-  var form = document.getElementById('wRegForm');
-  if (!form) return;
-  
-  var firstName = form.querySelector('input[placeholder*="Etunimi"], input[placeholder*="First"]');
-  var lastName = form.querySelector('input[placeholder*="Sukunimi"], input[placeholder*="Last"]');
-  var email = form.querySelector('input[type="email"]');
-  var city = form.querySelector('select');
-  var profession = form.querySelectorAll('select')[1];
-  
-  // Fallback: get all text inputs
-  var textInputs = form.querySelectorAll('input[type="text"]');
-  var fName = firstName ? firstName.value : (textInputs[0] ? textInputs[0].value : '');
-  var lName = lastName ? lastName.value : (textInputs[1] ? textInputs[1].value : '');
-  var emailVal = email ? email.value : '';
-  
-  if (!fName || !emailVal) {
-    alert(currentLang === 'en' ? 'Please fill in your name and email.' : 'Täytä nimesi ja sähköposti.');
-    return;
-  }
-  
-  var user = {
-    type: 'worker',
-    firstName: fName,
-    lastName: lName || '',
-    email: emailVal,
-    city: city ? city.value : '',
-    profession: profession ? profession.value : '',
-    registeredAt: new Date().toISOString(),
-    availDays: [],
-    shiftTimes: {}
-  };
-  
-  saveUser(user);
-  saveToAccounts(user);
-  
-  // Update worker dashboard greeting
-  var greeting = document.querySelector('#page-worker-dashboard h1');
-  if (greeting) greeting.textContent = 'Hei, ' + fName + '! 👋';
-  
-  goTo('worker-dashboard');
-}
+
 
 // ── WORKER LOGIN ──────────────────────────────────────────────────
-function loginWorker(e) {
-  if (e) e.preventDefault();
-  
-  var form = document.getElementById('wLoginForm');
-  if (!form) return;
-  
-  var email = form.querySelector('input[type="email"]') ? form.querySelector('input[type="email"]').value.trim() : '';
-  var pass = form.querySelector('input[type="password"]') ? form.querySelector('input[type="password"]').value : '';
-  
-  // Check admin
-  if (checkAdminLogin(email, pass)) {
-    _isAdminLoggedIn = true;
-    goTo('admin');
-    return;
-  }
-  
-  // Check registered accounts
-  var accounts = getAccounts();
-  var found = accounts.find(function(a) { 
-    return a.email && a.email.toLowerCase() === email.toLowerCase() && a.type === 'worker'; 
-  });
-  
-  if (found) {
-    saveUser(found);
-    var greeting = document.querySelector('#page-worker-dashboard h1');
-    if (greeting) greeting.textContent = 'Hei, ' + found.firstName + '! 👋';
-    goTo('worker-dashboard');
-    return;
-  }
-  
-  if (email) {
-    var user = { type: 'worker', firstName: email.split('@')[0], lastName: '', email: email };
-    saveUser(user);
-    goTo('worker-dashboard');
-  }
-}
+
 
 // ── LOGOUT ────────────────────────────────────────────────────────
 function logoutUser() {
@@ -3353,107 +3207,15 @@ function showTab(tabName) {
 }
 
 // Load real workers into admin workers tab
-function loadRealWorkersInAdmin() {
-  var tbody = document.getElementById('adminWorkersBody');
-  if (!tbody) return;
-  
-  var accounts = getAccounts();
-  var workers = accounts.filter(function(a) { return a.type === 'worker'; });
-  
-  if (workers.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">No registered workers yet</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML = workers.map(function(w) {
-    var date = w.registeredAt ? new Date(w.registeredAt).toLocaleDateString('fi-FI') : 'N/A';
-    return '<tr style="border-bottom:1px solid var(--border)">' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink)">' + w.firstName + ' ' + w.lastName + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (w.profession || '—') + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (w.city || '—') + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + w.email + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + date + '</td>' +
-      '<td style="padding:10px 16px"><span style="background:rgba(200,240,96,0.15);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600">Active</span></td>' +
-      '</tr>';
-  }).join('');
-}
+
 
 // Load real employers into admin employers tab
-function loadRealEmployersInAdmin() {
-  var tbody = document.getElementById('adminEmployersBody');
-  if (!tbody) return;
-  
-  var accounts = getAccounts();
-  var employers = accounts.filter(function(a) { return a.type === 'employer'; });
-  
-  if (employers.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">No registered employers yet</td></tr>';
-    return;
-  }
-  
-  tbody.innerHTML = employers.map(function(e) {
-    var date = e.registeredAt ? new Date(e.registeredAt).toLocaleDateString('fi-FI') : 'N/A';
-    return '<tr style="border-bottom:1px solid var(--border)">' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink)">' + (e.company || e.email) + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (e.industry || '—') + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (e.city || '—') + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + e.email + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (e.plan || 'Starter') + '</td>' +
-      '<td style="padding:10px 16px"><span style="background:rgba(200,240,96,0.15);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600">Active</span></td>' +
-      '</tr>';
-  }).join('');
-}
+
 
 // Update admin overview stats with real numbers
-function updateAdminOverviewStats() {
-  var accounts = getAccounts();
-  var workers = accounts.filter(function(a) { return a.type === 'worker'; }).length;
-  var employers = accounts.filter(function(a) { return a.type === 'employer'; }).length;
-  
-  // Update stat cards if showing real data
-  var statNums = document.querySelectorAll('#tab-overview .sc-num');
-  if (statNums.length >= 2 && workers > 0) {
-    statNums[0].textContent = (1240 + workers).toLocaleString();
-    statNums[1].textContent = (380 + employers).toLocaleString();
-  }
-  
-  // Show admin login status
-  var adminStatus = document.getElementById('adminLoginStatus');
-  if (adminStatus && _isAdminLoggedIn) {
-    adminStatus.style.display = 'block';
-  }
-  
-  // Update latest registrations table
-  loadLatestRegistrations();
-}
 
-function loadLatestRegistrations() {
-  var tbody = document.getElementById('latestRegBody');
-  if (!tbody) return;
-  
-  var accounts = getAccounts();
-  if (accounts.length === 0) return;
-  
-  // Sort by registration date, newest first
-  accounts.sort(function(a,b) {
-    return new Date(b.registeredAt || 0) - new Date(a.registeredAt || 0);
-  });
-  
-  var rows = accounts.slice(0, 10).map(function(acc) {
-    var name = acc.type === 'employer' ? (acc.company || acc.email) : (acc.firstName + ' ' + acc.lastName);
-    var date = acc.registeredAt ? new Date(acc.registeredAt).toLocaleDateString('fi-FI') : 'N/A';
-    var typeLabel = acc.type === 'employer' ? 'Employer' : 'Worker';
-    return '<tr style="border-bottom:1px solid var(--border)">' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink)">' + name + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + typeLabel + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (acc.city || '—') + '</td>' +
-      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + date + '</td>' +
-      '<td style="padding:10px 16px"><span style="background:rgba(200,240,96,0.15);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600">Active</span></td>' +
-      '</tr>';
-  }).join('');
-  
-  tbody.innerHTML = rows;
-}
+
+
 
 // Go home without losing session
 function safeGoHome() {
@@ -3552,6 +3314,538 @@ function updateUIForUser(user) {
     if (user.type === 'worker') updateWorkerDashboard();
     if (user.type === 'employer') updateEmployerDashboard();
   }, 50);
+}
+
+
+// ── Availability page shift picker ────────────────────────────────────────────
+// Reuses the same shiftPickerModal but saves to _avSel and _avShiftTimes
+
+function openAvailShiftPicker(day, el) {
+  _currentPickerDay = day;
+  _currentPickerEl = el;
+  _selectedShift = null;
+  
+  // Reset UI
+  document.querySelectorAll('.shift-option-btn').forEach(function(b){b.classList.remove('selected');});
+  var ctr = document.getElementById('customTimeRow');
+  if(ctr) ctr.style.display = 'none';
+  var cfb = document.getElementById('confirmShiftBtn');
+  if(cfb) cfb.style.display = 'none';
+  var ssm = document.getElementById('shiftSavedMsg');
+  if(ssm) ssm.style.display = 'none';
+  
+  // Set title
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var date = new Date(_avCal.getFullYear(), _avCal.getMonth(), day);
+  var currentShift = _avShiftTimes[day];
+  var title = dayNames[date.getDay()] + ' ' + day + ' ' + months[_avCal.getMonth()];
+  if(currentShift) title += ' — Current: ' + currentShift;
+  
+  var titleEl = document.getElementById('shiftPickerTitle');
+  if(titleEl) titleEl.textContent = title;
+  
+  // Override confirmShift to save to avail calendar
+  window._shiftPickerMode = 'avail';
+  
+  // Show modal
+  var modal = document.getElementById('shiftPickerModal');
+  if(modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+
+// Override confirmShift to handle both profile and availability calendars
+var _origConfirmShift = confirmShift;
+function confirmShift() {
+  if (window._shiftPickerMode === 'avail') {
+    // Save to availability calendar
+    if(!_currentPickerDay) return;
+    var shift = _selectedShift;
+    
+    if(shift === 'remove') {
+      _avSel.delete(_currentPickerDay);
+      delete _avShiftTimes[_currentPickerDay];
+      var ssm = document.getElementById('shiftSavedMsg');
+      if(ssm) { ssm.textContent = '🚫 Removed / Poistettu'; ssm.style.display = 'block'; }
+      var cfb = document.getElementById('confirmShiftBtn');
+      if(cfb) cfb.style.display = 'none';
+      setTimeout(function(){
+        closeShiftPicker();
+        renderAvailCal();
+        var sc = document.getElementById('selCount');
+        if(sc) sc.textContent = _avSel.size;
+      }, 900);
+      return;
+    }
+    
+    if(shift === 'custom') {
+      var s = document.getElementById('customStart');
+      var e = document.getElementById('customEnd');
+      if(s && e) {
+        var sv = s.value.replace(/^0/,'').replace(':00','');
+        var ev = e.value.replace(/^0/,'').replace(':00','');
+        shift = sv + '–' + ev;
+      }
+    }
+    
+    if(!shift) return;
+    
+    _avSel.add(_currentPickerDay);
+    _avShiftTimes[_currentPickerDay] = shift;
+    
+    var ssm = document.getElementById('shiftSavedMsg');
+    if(ssm) { ssm.textContent = '✅ Saved: ' + shift; ssm.style.display = 'block'; }
+    var cfb = document.getElementById('confirmShiftBtn');
+    if(cfb) cfb.style.display = 'none';
+    
+    // Save to user's profile
+    if(_currentUser) {
+      _currentUser.availDays = Array.from(_avSel);
+      _currentUser.shiftTimes = _avShiftTimes;
+      localStorage.setItem('lisaduuni_user', JSON.stringify(_currentUser));
+    }
+    
+    setTimeout(function(){
+      closeShiftPicker();
+      renderAvailCal();
+      var sc = document.getElementById('selCount');
+      if(sc) sc.textContent = _avSel.size;
+    }, 900);
+    
+  } else {
+    // Profile calendar mode - use original
+    if(_origConfirmShift && typeof _origConfirmShift === 'function') {
+      _origConfirmShift();
+    }
+  }
+}
+
+// Also load saved availability when worker opens availability page
+function loadWorkerAvailability() {
+  if(!_currentUser || _currentUser.type !== 'worker') return;
+  if(_currentUser.availDays) {
+    _avSel = new Set(_currentUser.availDays);
+  }
+  if(_currentUser.shiftTimes) {
+    _avShiftTimes = _currentUser.shiftTimes;
+  }
+  renderAvailCal();
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// SUPABASE REAL DATABASE CONNECTION
+// ═══════════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://jwelohlmhvnnsldswbwi.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzMwMDAwMDAwLCJleHAiOjk5OTk5OTk5OTl9.fi4V6SmmisEmZDJhaBn4kepE3vrVKmIQzyFN6N2HFF0';
+
+// Supabase API helper
+async function supabaseRequest(method, table, data = null, filters = null) {
+  let url = SUPABASE_URL + '/rest/v1/' + table;
+  if (filters) url += '?' + filters;
+  
+  const options = {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Prefer': method === 'POST' ? 'return=representation' : ''
+    }
+  };
+  
+  if (data && (method === 'POST' || method === 'PATCH')) {
+    options.body = JSON.stringify(data);
+  }
+  
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    if (!response.ok) {
+      console.error('Supabase error:', result);
+      return { error: result };
+    }
+    return { data: result };
+  } catch (err) {
+    console.error('Network error:', err);
+    return { error: err.message };
+  }
+}
+
+// ── Register new EMPLOYER to Supabase ─────────────────────────────
+async function registerNewEmployer(e) {
+  if (e) e.preventDefault();
+  
+  const form = document.getElementById('eRegForm');
+  if (!form) return;
+  
+  const company = form.querySelector('input[name="company"]')?.value?.trim();
+  const businessId = form.querySelector('input[name="businessId"]')?.value?.trim();
+  const email = form.querySelector('input[name="email"]')?.value?.trim();
+  const phone = form.querySelector('input[name="phone"]')?.value?.trim() || 
+                form.querySelector('input[type="tel"]')?.value?.trim();
+  const contact = form.querySelector('input[name="contact"]')?.value?.trim();
+  const industry = form.querySelector('select')?.value;
+  const citySelect = form.querySelectorAll('select')[1]?.value;
+  const description = form.querySelector('textarea')?.value?.trim();
+  const password = form.querySelector('input[type="password"]')?.value;
+  
+  if (!company || !email) {
+    alert(currentLang === 'en' ? 
+      'Please fill in company name and email.' : 
+      'Täytä yrityksen nimi ja sähköposti.');
+    return;
+  }
+  
+  // Show loading
+  const btn = form.querySelector('button[type="submit"]');
+  const origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Saving...' : 'Tallennetaan...'; btn.disabled = true; }
+  
+  // Save to Supabase
+  const result = await supabaseRequest('POST', 'employers', {
+    company_name: company,
+    business_id: businessId,
+    email: email,
+    phone: phone,
+    contact_person: contact,
+    industry: industry,
+    city: citySelect,
+    description: description,
+    plan: 'Starter'
+  });
+  
+  if (btn) { btn.textContent = origText; btn.disabled = false; }
+  
+  if (result.error) {
+    // Check if duplicate email
+    if (result.error.code === '23505' || JSON.stringify(result.error).includes('duplicate')) {
+      alert(currentLang === 'en' ? 
+        'This email is already registered. Please log in instead.' : 
+        'Tämä sähköposti on jo rekisteröity. Kirjaudu sisään.');
+      return;
+    }
+    alert(currentLang === 'en' ? 
+      'Registration failed. Please try again.' : 
+      'Rekisteröinti epäonnistui. Yritä uudelleen.');
+    return;
+  }
+  
+  // Success - save to localStorage as well for session
+  const user = {
+    type: 'employer',
+    company: company,
+    email: email,
+    city: citySelect,
+    industry: industry,
+    plan: 'Starter',
+    planPrice: '€39',
+    dbId: result.data?.[0]?.id,
+    registeredAt: new Date().toISOString()
+  };
+  
+  saveUser(user);
+  saveToAccounts(user);
+  
+  // Navigate to welcome
+  goTo('employer-welcome');
+}
+
+// ── Register new WORKER to Supabase ──────────────────────────────
+async function registerNewWorker(e) {
+  if (e) e.preventDefault();
+  
+  const form = document.getElementById('wRegForm');
+  if (!form) return;
+  
+  const firstName = form.querySelector('input[name="firstName"]')?.value?.trim() ||
+                    form.querySelectorAll('input[type="text"]')[0]?.value?.trim();
+  const lastName = form.querySelector('input[name="lastName"]')?.value?.trim() ||
+                   form.querySelectorAll('input[type="text"]')[1]?.value?.trim();
+  const email = form.querySelector('input[name="email"]')?.value?.trim() ||
+                form.querySelector('input[type="email"]')?.value?.trim();
+  const city = form.querySelector('select')?.value;
+  const profession = form.querySelectorAll('select')[1]?.value || 
+                     form.querySelectorAll('select')[0]?.value;
+  const phone = form.querySelector('input[type="tel"]')?.value?.trim();
+  
+  if (!firstName || !email) {
+    alert(currentLang === 'en' ? 
+      'Please fill in your first name and email.' : 
+      'Täytä etunimesi ja sähköpostisi.');
+    return;
+  }
+  
+  // Show loading
+  const btn = form.querySelector('button[type="submit"]');
+  const origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Saving...' : 'Tallennetaan...'; btn.disabled = true; }
+  
+  // Save to Supabase
+  const result = await supabaseRequest('POST', 'workers', {
+    first_name: firstName,
+    last_name: lastName || '',
+    email: email,
+    city: city || '',
+    profession: profession || '',
+    phone: phone || ''
+  });
+  
+  if (btn) { btn.textContent = origText; btn.disabled = false; }
+  
+  if (result.error) {
+    if (result.error.code === '23505' || JSON.stringify(result.error).includes('duplicate')) {
+      alert(currentLang === 'en' ? 
+        'This email is already registered. Please log in.' : 
+        'Tämä sähköposti on jo rekisteröity. Kirjaudu sisään.');
+      return;
+    }
+    alert(currentLang === 'en' ? 
+      'Registration failed. Please try again.' : 
+      'Rekisteröinti epäonnistui. Yritä uudelleen.');
+    return;
+  }
+  
+  // Success
+  const user = {
+    type: 'worker',
+    firstName: firstName,
+    lastName: lastName || '',
+    email: email,
+    city: city || '',
+    profession: profession || '',
+    dbId: result.data?.[0]?.id,
+    registeredAt: new Date().toISOString()
+  };
+  
+  saveUser(user);
+  saveToAccounts(user);
+  
+  // Update greeting
+  const greeting = document.querySelector('#page-worker-dashboard h1');
+  if (greeting) greeting.textContent = 'Hei, ' + firstName + '! 👋';
+  
+  goTo('worker-dashboard');
+}
+
+// ── LOGIN - check against Supabase ───────────────────────────────
+async function loginEmployer(e) {
+  if (e) e.preventDefault();
+  
+  const form = document.getElementById('eLoginForm');
+  if (!form) return;
+  
+  const email = form.querySelector('input[type="email"]')?.value?.trim();
+  const pass = form.querySelector('input[type="password"]')?.value;
+  
+  // Admin check
+  if (checkAdminLogin(email, pass)) {
+    _isAdminLoggedIn = true;
+    goTo('admin');
+    return;
+  }
+  
+  // Show loading
+  const btn = form.querySelector('button[type="submit"]');
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Logging in...' : 'Kirjaudutaan...'; btn.disabled = true; }
+  
+  // Check Supabase
+  const result = await supabaseRequest('GET', 'employers', null, 
+    'email=eq.' + encodeURIComponent(email) + '&select=*');
+  
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Log in →' : 'Kirjaudu sisään →'; btn.disabled = false; }
+  
+  if (result.error || !result.data || result.data.length === 0) {
+    alert(currentLang === 'en' ? 
+      'Email not found. Please register first.' : 
+      'Sähköpostia ei löydy. Rekisteröidy ensin.');
+    return;
+  }
+  
+  const emp = result.data[0];
+  const user = {
+    type: 'employer',
+    company: emp.company_name,
+    email: emp.email,
+    city: emp.city,
+    industry: emp.industry,
+    plan: emp.plan || 'Starter',
+    planPrice: '€39',
+    dbId: emp.id,
+    registeredAt: emp.created_at
+  };
+  
+  saveUser(user);
+  goTo('employer-welcome');
+}
+
+async function loginWorker(e) {
+  if (e) e.preventDefault();
+  
+  const form = document.getElementById('wLoginForm');
+  if (!form) return;
+  
+  const email = form.querySelector('input[type="email"]')?.value?.trim();
+  const pass = form.querySelector('input[type="password"]')?.value;
+  
+  // Admin check
+  if (checkAdminLogin(email, pass)) {
+    _isAdminLoggedIn = true;
+    goTo('admin');
+    return;
+  }
+  
+  // Show loading
+  const btn = form.querySelector('button[type="submit"]');
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Logging in...' : 'Kirjaudutaan...'; btn.disabled = true; }
+  
+  // Check Supabase
+  const result = await supabaseRequest('GET', 'workers', null,
+    'email=eq.' + encodeURIComponent(email) + '&select=*');
+  
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Log in →' : 'Kirjaudu →'; btn.disabled = false; }
+  
+  if (result.error || !result.data || result.data.length === 0) {
+    alert(currentLang === 'en' ? 
+      'Email not found. Please register first.' : 
+      'Sähköpostia ei löydy. Rekisteröidy ensin.');
+    return;
+  }
+  
+  const w = result.data[0];
+  const user = {
+    type: 'worker',
+    firstName: w.first_name,
+    lastName: w.last_name,
+    email: w.email,
+    city: w.city,
+    profession: w.profession,
+    dbId: w.id,
+    registeredAt: w.created_at
+  };
+  
+  saveUser(user);
+  
+  const greeting = document.querySelector('#page-worker-dashboard h1');
+  if (greeting) greeting.textContent = 'Hei, ' + w.first_name + '! 👋';
+  
+  goTo('worker-dashboard');
+}
+
+// ── Admin: Load real users from Supabase ─────────────────────────
+async function loadRealWorkersInAdmin() {
+  const tbody = document.getElementById('adminWorkersBody');
+  if (!tbody) return;
+  
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:16px">Loading...</td></tr>';
+  
+  const result = await supabaseRequest('GET', 'workers', null, 'select=*&order=created_at.desc');
+  
+  if (result.error || !result.data) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:16px">Error loading data</td></tr>';
+    return;
+  }
+  
+  if (result.data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">No registered workers yet</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = result.data.map(function(w) {
+    const date = new Date(w.created_at).toLocaleDateString('fi-FI');
+    return '<tr style="border-bottom:1px solid var(--border)">' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink)">' + w.first_name + ' ' + w.last_name + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (w.profession || '—') + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (w.city || '—') + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + w.email + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + date + '</td>' +
+      '<td style="padding:10px 16px"><span style="background:rgba(200,240,96,0.15);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600">✓ Active</span></td>' +
+      '</tr>';
+  }).join('');
+}
+
+async function loadRealEmployersInAdmin() {
+  const tbody = document.getElementById('adminEmployersBody');
+  if (!tbody) return;
+  
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:16px">Loading...</td></tr>';
+  
+  const result = await supabaseRequest('GET', 'employers', null, 'select=*&order=created_at.desc');
+  
+  if (result.error || !result.data) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:16px">Error loading data</td></tr>';
+    return;
+  }
+  
+  if (result.data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:20px">No registered employers yet</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = result.data.map(function(e) {
+    const date = new Date(e.created_at).toLocaleDateString('fi-FI');
+    return '<tr style="border-bottom:1px solid var(--border)">' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink)">' + e.company_name + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (e.industry || '—') + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (e.city || '—') + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + e.email + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + (e.plan || 'Starter') + '</td>' +
+      '<td style="padding:10px 16px"><span style="background:rgba(200,240,96,0.15);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600">✓ Active</span></td>' +
+      '</tr>';
+  }).join('');
+}
+
+async function updateAdminOverviewStats() {
+  const wResult = await supabaseRequest('GET', 'workers', null, 'select=id');
+  const eResult = await supabaseRequest('GET', 'employers', null, 'select=id');
+  
+  const wCount = wResult.data ? wResult.data.length : 0;
+  const eCount = eResult.data ? eResult.data.length : 0;
+  
+  const statNums = document.querySelectorAll('#tab-overview .sc-num');
+  if (statNums[0]) statNums[0].textContent = (wCount).toLocaleString();
+  if (statNums[1]) statNums[1].textContent = (eCount).toLocaleString();
+  
+  const adminStatus = document.getElementById('adminLoginStatus');
+  if (adminStatus && _isAdminLoggedIn) adminStatus.style.display = 'block';
+  
+  // Load latest registrations
+  const allWorkers = wResult.data || [];
+  const allEmployers = eResult.data || [];
+  loadLatestRegistrations();
+}
+
+async function loadLatestRegistrations() {
+  const tbody = document.getElementById('latestRegBody');
+  if (!tbody) return;
+  
+  const [wRes, eRes] = await Promise.all([
+    supabaseRequest('GET', 'workers', null, 'select=*&order=created_at.desc&limit=5'),
+    supabaseRequest('GET', 'employers', null, 'select=*&order=created_at.desc&limit=5')
+  ]);
+  
+  const workers = (wRes.data || []).map(function(w) {
+    return { name: w.first_name + ' ' + w.last_name, type: 'Worker', city: w.city || '—', date: new Date(w.created_at).toLocaleDateString('fi-FI') };
+  });
+  const employers = (eRes.data || []).map(function(e) {
+    return { name: e.company_name, type: 'Employer', city: e.city || '—', date: new Date(e.created_at).toLocaleDateString('fi-FI') };
+  });
+  
+  const all = workers.concat(employers).sort(function(a,b) { return b.date.localeCompare(a.date); }).slice(0, 8);
+  
+  if (all.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--ink3);padding:20px">No registrations yet</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = all.map(function(r) {
+    return '<tr style="border-bottom:1px solid var(--border)">' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink)">' + r.name + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + r.type + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + r.city + '</td>' +
+      '<td style="padding:10px 16px;font-size:12px;color:var(--ink3)">' + r.date + '</td>' +
+      '<td style="padding:10px 16px"><span style="background:rgba(200,240,96,0.15);color:var(--lime);padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600">Active</span></td>' +
+      '</tr>';
+  }).join('');
 }
 
 </script>
@@ -4891,7 +5185,7 @@ function updateUIForUser(user) {
       </h1>
     </div>
     <div style="font-size:12px;color:var(--ink3)">
-      <span id="jobCount" style="color:var(--lime);font-weight:600">8</span>
+      <span id="jobCount" style="color:var(--lime);font-weight:600">2</span>
       <span data-fi=" avointa paikkaa" data-en=" open positions"> avointa paikkaa</span>
     </div>
   </div>
@@ -4923,24 +5217,40 @@ function updateUIForUser(user) {
   <!-- Job listings -->
   <div id="jobListings" style="display:flex;flex-direction:column;gap:12px">
 
-    <!-- Job 1 - URGENT -->
-    <div class="job-card" data-city="Helsinki" data-type="Terveydenhuolto" data-urgent="true" style="background:var(--bg2);border:1px solid rgba(200,240,96,0.35);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start">
+    <!-- DEMO Banner -->
+    <div style="background:rgba(200,240,96,0.06);border:1px dashed rgba(200,240,96,0.3);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-size:18px">📋</span>
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--lime)"><span data-fi="Demo-ilmoitukset" data-en="Demo listings">Demo-ilmoitukset</span></div>
+        <div style="font-size:11px;color:var(--ink3)"><span data-fi="Nämä ovat esimerkkejä. Oikeat työnantajat näkyvät tässä kun he rekisteröityvät." data-en="These are examples. Real employers will appear here when they register.">Nämä ovat esimerkkejä. Oikeat työnantajat näkyvät tässä kun he rekisteröityvät.</span></div>
+      </div>
+    </div>
+
+    <!-- Demo Job 1 - URGENT -->
+    <div class="job-card" data-city="Helsinki" data-type="Terveydenhuolto" data-urgent="true" style="background:var(--bg2);border:1px solid rgba(200,240,96,0.25);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start;position:relative">
+      <div style="position:absolute;top:12px;right:14px;background:rgba(200,240,96,0.1);border:1px solid rgba(200,240,96,0.2);border-radius:6px;padding:2px 8px;font-size:10px;color:var(--lime)">DEMO</div>
       <div style="width:50px;height:50px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🏥</div>
       <div style="flex:1">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
           <div>
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-              <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink)"><span data-fi="Sairaanhoitaja — Aamuvuoro" data-en="Nurse — Morning shift">Sairaanhoitaja — Aamuvuoro</span></h3>
+              <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink)">
+                <span data-fi="Sairaanhoitaja — Aamuvuoro" data-en="Nurse — Morning shift">Sairaanhoitaja — Aamuvuoro</span>
+              </h3>
               <span style="background:rgba(240,80,80,0.15);color:#f06060;border-radius:100px;padding:2px 9px;font-size:10px;font-weight:600">🔴 <span data-fi="KIIREELLINEN" data-en="URGENT">KIIREELLINEN</span></span>
             </div>
-            <div style="font-size:12px;color:var(--ink3)">Mehiläinen Oy · Helsinki · <span data-fi="pe 3.5.2026" data-en="Fri 3 May 2026">pe 3.5.2026</span></div>
+            <div style="font-size:12px;color:var(--ink3)">
+              <span data-fi="Esimerkki-sairaala · Helsinki · pe 3.5.2026" data-en="Example Hospital · Helsinki · Fri 3 May 2026">Esimerkki-sairaala · Helsinki · pe 3.5.2026</span>
+            </div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-size:15px;font-weight:600;color:var(--lime)">18,50 €/h</div>
             <div style="font-size:11px;color:var(--ink3)">7:00–15:00</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px"><span data-fi="Etsimme kokenutta sairaanhoitajaa kirurgian vuodeosastolle perjantaiksi. Työ sisältää potilashoitoa ja raportoinnin." data-en="Looking for an experienced nurse for the surgery ward on Friday. Work includes patient care and reporting.">Etsimme kokenutta sairaanhoitajaa kirurgian vuodeosastolle perjantaiksi. Työ sisältää potilashoitoa ja raportoinnin.</span></p>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px">
+          <span data-fi="Tämä on esimerkki-ilmoitus. Oikeat työnantajat julkaisevat omat ilmoituksensa kun he rekisteröityvät palveluun." data-en="This is a demo listing. Real employers will post their own listings when they register on the platform.">Tämä on esimerkki-ilmoitus. Oikeat työnantajat julkaisevat omat ilmoituksensa kun he rekisteröityvät.</span>
+        </p>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
           <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🏥 <span data-fi="Terveydenhuolto" data-en="Healthcare">Terveydenhuolto</span></span>
           <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">📍 Helsinki</span>
@@ -4948,31 +5258,38 @@ function updateUIForUser(user) {
           <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🗣️ FI</span>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="applyToJob(1,'Mehiläinen Oy','Sairaanhoitaja')" class="btn-primary" style="padding:9px 20px;font-size:12px">
+          <button onclick="alert(currentLang==='en'?'This is a demo listing. Real job applications will be available when employers register.':'Tämä on demo-ilmoitus. Oikeat hakemukset toimivat kun työnantajat rekisteröityvät.')" class="btn-primary" style="padding:9px 20px;font-size:12px">
             <span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span>
           </button>
-          <button onclick="openConversation('Mehiläinen Oy','Työnantaja','🏥')" class="btn-outline" style="padding:9px 16px;font-size:12px">
+          <button onclick="alert(currentLang==='en'?'Demo listing — register as employer to post real jobs.':'Demo-ilmoitus — rekisteröidy työnantajana lisätäksesi oikeita ilmoituksia.')" class="btn-outline" style="padding:9px 16px;font-size:12px">
             <span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Job 2 -->
-    <div class="job-card" data-city="Vantaa" data-type="Opetus" data-urgent="false" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start">
+    <!-- Demo Job 2 -->
+    <div class="job-card" data-city="Vantaa" data-type="Opetus" data-urgent="false" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start;position:relative">
+      <div style="position:absolute;top:12px;right:14px;background:rgba(200,240,96,0.1);border:1px solid rgba(200,240,96,0.2);border-radius:6px;padding:2px 8px;font-size:10px;color:var(--lime)">DEMO</div>
       <div style="width:50px;height:50px;background:linear-gradient(135deg,#1a0a2e,#a060f0);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📚</div>
       <div style="flex:1">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
           <div>
-            <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:3px"><span data-fi="Luokanopettajan sijainen" data-en="Substitute class teacher">Luokanopettajan sijainen</span></h3>
-            <div style="font-size:12px;color:var(--ink3)">Koivulan koulu · Vantaa · <span data-fi="ma–ke 6–8.5.2026" data-en="Mon–Wed 6–8 May 2026">ma–ke 6–8.5.2026</span></div>
+            <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:3px">
+              <span data-fi="Luokanopettajan sijainen" data-en="Substitute class teacher">Luokanopettajan sijainen</span>
+            </h3>
+            <div style="font-size:12px;color:var(--ink3)">
+              <span data-fi="Esimerkki-koulu · Vantaa · ma–ke 6–8.5.2026" data-en="Example School · Vantaa · Mon–Wed 6–8 May 2026">Esimerkki-koulu · Vantaa · ma–ke 6–8.5.2026</span>
+            </div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-size:15px;font-weight:600;color:var(--lime)">16,00 €/h</div>
             <div style="font-size:11px;color:var(--ink3)">8:00–15:00</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px"><span data-fi="Haemme sijaisopettajaa 3.-luokalle kolmeksi päiväksi. Tuntien suunnitelmat valmiina, pätevyys vaaditaan." data-en="Looking for a substitute teacher for grade 3 for three days. Lesson plans ready, qualification required.">Haemme sijaisopettajaa 3.-luokalle kolmeksi päiväksi. Tuntien suunnitelmat valmiina, pätevyys vaaditaan.</span></p>
+        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px">
+          <span data-fi="Tämä on esimerkki-ilmoitus. Oikeat koulut ja päiväkodit lisäävät omat ilmoituksensa kun he rekisteröityvät." data-en="This is a demo listing. Real schools and daycares will add their own listings when they register.">Tämä on esimerkki-ilmoitus. Oikeat koulut ja päiväkodit lisäävät omat ilmoituksensa kun he rekisteröityvät.</span>
+        </p>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
           <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">📚 <span data-fi="Opetus" data-en="Education">Opetus</span></span>
           <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">📍 Vantaa</span>
@@ -4980,123 +5297,32 @@ function updateUIForUser(user) {
           <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🗣️ FI</span>
         </div>
         <div style="display:flex;gap:8px">
-          <button onclick="applyToJob(2,'Koivulan koulu','Luokanopettajan sijainen')" class="btn-primary" style="padding:9px 20px;font-size:12px"><span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span></button>
-          <button class="btn-outline" style="padding:9px 16px;font-size:12px"><span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span></button>
+          <button onclick="alert(currentLang==='en'?'This is a demo listing. Real job applications will be available when employers register.':'Tämä on demo-ilmoitus. Oikeat hakemukset toimivat kun työnantajat rekisteröityvät.')" class="btn-primary" style="padding:9px 20px;font-size:12px">
+            <span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span>
+          </button>
+          <button onclick="alert(currentLang==='en'?'Demo listing — register as employer to post real jobs.':'Demo-ilmoitus — rekisteröidy työnantajana lisätäksesi oikeita ilmoituksia.')" class="btn-outline" style="padding:9px 16px;font-size:12px">
+            <span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Job 3 -->
-    <div class="job-card" data-city="Helsinki" data-type="Ravintola" data-urgent="false" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start">
-      <div style="width:50px;height:50px;background:linear-gradient(135deg,#2e0a05,#f05030);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🍽️</div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
-          <div>
-            <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:3px"><span data-fi="Tarjoilija — Viikonloppuvuorot" data-en="Waiter — Weekend shifts">Tarjoilija — Viikonloppuvuorot</span></h3>
-            <div style="font-size:12px;color:var(--ink3)">Ravintola Savoy · Helsinki · <span data-fi="la–su 10–11.5.2026" data-en="Sat–Sun 10–11 May 2026">la–su 10–11.5.2026</span></div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:15px;font-weight:600;color:var(--lime)">14,50 €/h</div>
-            <div style="font-size:11px;color:var(--ink3)">14:00–22:00</div>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px"><span data-fi="Haemme tarjoilijaa viikonlopuksi fine dining -ravintolaan. Kokemus a la carte -palvelusta eduksi." data-en="Looking for a waiter for the weekend at a fine dining restaurant. Experience in à la carte service is an advantage.">Haemme tarjoilijaa viikonlopuksi fine dining -ravintolaan. Kokemus a la carte -palvelusta eduksi.</span></p>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🍽️ <span data-fi="Ravintola" data-en="Restaurant">Ravintola</span></span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">📍 Helsinki</span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">⏰ 2×8h</span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🗣️ FI, EN</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="applyToJob(3,'Ravintola Savoy','Tarjoilija')" class="btn-primary" style="padding:9px 20px;font-size:12px"><span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span></button>
-          <button class="btn-outline" style="padding:9px 16px;font-size:12px"><span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Job 4 -->
-    <div class="job-card" data-city="Espoo" data-type="Terveydenhuolto" data-urgent="false" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start">
-      <div style="width:50px;height:50px;background:linear-gradient(135deg,#0a1530,#6080f0);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">👴</div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
-          <div>
-            <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:3px"><span data-fi="Lähihoitaja — Vanhustenhoito" data-en="Practical nurse — Elderly care">Lähihoitaja — Vanhustenhoito</span></h3>
-            <div style="font-size:12px;color:var(--ink3)">Hoivakoti Aurinko · Espoo · <span data-fi="ti 6.5.2026" data-en="Tue 6 May 2026">ti 6.5.2026</span></div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:15px;font-weight:600;color:var(--lime)">15,80 €/h</div>
-            <div style="font-size:11px;color:var(--ink3)">7:00–15:00</div>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px"><span data-fi="Haemme lähihoitajaa yhteen aamuvuoroon vanhustenhoivakotiin. Kokemus dementiatyöstä eduksi." data-en="Looking for a practical nurse for one morning shift at an elderly care home. Experience with dementia care is an advantage.">Haemme lähihoitajaa yhteen aamuvuoroon vanhustenhoivakotiin. Kokemus dementiatyöstä eduksi.</span></p>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">❤️ <span data-fi="Vanhustenhoito" data-en="Elderly care">Vanhustenhoito</span></span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">📍 Espoo</span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">⏰ 8h</span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🗣️ FI</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="applyToJob(4,'Hoivakoti Aurinko','Lähihoitaja')" class="btn-primary" style="padding:9px 20px;font-size:12px"><span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span></button>
-          <button class="btn-outline" style="padding:9px 16px;font-size:12px"><span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Job 5 -->
-    <div class="job-card" data-city="Tampere" data-type="Opetus" data-urgent="true" style="background:var(--bg2);border:1px solid rgba(200,240,96,0.25);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start">
-      <div style="width:50px;height:50px;background:linear-gradient(135deg,#0a2e1a,#30f090);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🧒</div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-              <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink)"><span data-fi="Päiväkodin sijainen" data-en="Daycare substitute">Päiväkodin sijainen</span></h3>
-              <span style="background:rgba(240,80,80,0.15);color:#f06060;border-radius:100px;padding:2px 9px;font-size:10px;font-weight:600">🔴 <span data-fi="KIIREELLINEN" data-en="URGENT">KIIREELLINEN</span></span>
-            </div>
-            <div style="font-size:12px;color:var(--ink3)">Päiväkoti Satakieli · Tampere · <span data-fi="to 8.5.2026" data-en="Thu 8 May 2026">to 8.5.2026</span></div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:15px;font-weight:600;color:var(--lime)">13,50 €/h</div>
-            <div style="font-size:11px;color:var(--ink3)">8:00–16:00</div>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px"><span data-fi="Haemme lastentarhanopettajaa tai hoitajaa päiväkotiin torstaiksi. Ryhmässä 18 lasta, 2–5-vuotiaita." data-en="Looking for a kindergarten teacher or carer for Thursday. Group has 18 children aged 2–5.">Haemme lastentarhanopettajaa tai hoitajaa päiväkotiin torstaiksi. Ryhmässä 18 lasta, 2–5-vuotiaita.</span></p>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🧒 <span data-fi="Varhaiskasvatus" data-en="Early education">Varhaiskasvatus</span></span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">📍 Tampere</span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">⏰ 8h</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="applyToJob(5,'Päiväkoti Satakieli','Päiväkodin sijainen')" class="btn-primary" style="padding:9px 20px;font-size:12px"><span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span></button>
-          <button class="btn-outline" style="padding:9px 16px;font-size:12px"><span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Job 6 -->
-    <div class="job-card" data-city="Helsinki" data-type="Toimisto" data-urgent="false" style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;gap:16px;align-items:flex-start">
-      <div style="width:50px;height:50px;background:linear-gradient(135deg,#0a1a2e,#3090f0);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">💼</div>
-      <div style="flex:1">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap">
-          <div>
-            <h3 style="font-family:var(--font-head);font-size:17px;font-weight:400;color:var(--ink);margin-bottom:3px"><span data-fi="Toimistosihteeri — Etätyö" data-en="Office secretary — Remote">Toimistosihteeri — Etätyö</span></h3>
-            <div style="font-size:12px;color:var(--ink3)">TechFin Oy · Helsinki · <span data-fi="12–16.5.2026" data-en="12–16 May 2026">12–16.5.2026</span></div>
-          </div>
-          <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:15px;font-weight:600;color:var(--lime)">15,00 €/h</div>
-            <div style="font-size:11px;color:var(--ink3)">8:00–16:00</div>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--ink3);line-height:1.7;margin-bottom:12px"><span data-fi="Haemme toimistosihteeriä viikoksi etätöihin. Tehtäviin kuuluu sähköpostihallinnointi, kalenterointi ja asiakaspalvelu." data-en="Looking for an office secretary for a week of remote work. Tasks include email management, scheduling and customer service.">Haemme toimistosihteeriä viikoksi etätöihin. Tehtäviin kuuluu sähköpostihallinnointi, kalenterointi ja asiakaspalvelu.</span></p>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">💼 <span data-fi="Toimisto" data-en="Office">Toimisto</span></span>
-          <span style="background:rgba(96,180,240,0.1);border:1px solid rgba(96,180,240,0.3);border-radius:6px;padding:3px 9px;font-size:11px;color:#60b4f0">🏠 <span data-fi="Etätyö" data-en="Remote">Etätyö</span></span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">⏰ 5 pv</span>
-          <span style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink2)">🗣️ FI, EN</span>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="applyToJob(6,'TechFin Oy','Toimistosihteeri')" class="btn-primary" style="padding:9px 20px;font-size:12px"><span data-fi="Hae paikkaa →" data-en="Apply now →">Hae paikkaa →</span></button>
-          <button class="btn-outline" style="padding:9px 16px;font-size:12px"><span data-fi="Kysy lisää" data-en="Ask more">Kysy lisää</span></button>
-        </div>
+    <!-- Coming soon box -->
+    <div style="background:var(--bg2);border:1px dashed var(--border2);border-radius:14px;padding:28px;text-align:center">
+      <div style="font-size:32px;margin-bottom:10px">🚀</div>
+      <h3 style="font-family:var(--font-head);font-size:18px;font-weight:400;color:var(--ink);margin-bottom:8px">
+        <span data-fi="Lisää ilmoituksia tulossa!" data-en="More listings coming soon!">Lisää ilmoituksia tulossa!</span>
+      </h3>
+      <p style="font-size:12px;color:var(--ink3);line-height:1.7;max-width:400px;margin:0 auto 16px">
+        <span data-fi="Kun työnantajat rekisteröityvät Lisaduuni.com-palveluun, heidän ilmoituksensa ilmestyvät tähän automaattisesti." data-en="When employers register on Lisaduuni.com, their listings will appear here automatically.">Kun työnantajat rekisteröityvät Lisaduuni.com-palveluun, heidän ilmoituksensa ilmestyvät tähän automaattisesti.</span>
+      </p>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button onclick="goTo('employer-reg')" class="btn-outline" style="padding:9px 18px;font-size:12px">
+          🏢 <span data-fi="Oletko työnantaja? Lisää ilmoitus →" data-en="Are you an employer? Post a job →">Oletko työnantaja? Lisää ilmoitus →</span>
+        </button>
+        <button onclick="goTo('worker-dashboard')" class="btn-outline" style="padding:9px 18px;font-size:12px">
+          ← <span data-fi="Takaisin omaan profiiliin" data-en="Back to my profile">Takaisin omaan profiiliin</span>
+        </button>
       </div>
     </div>
 
