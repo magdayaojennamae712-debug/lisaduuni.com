@@ -1747,7 +1747,7 @@ document.addEventListener('DOMContentLoaded', initLang);
 // ---------- Router ----------
 function goTo(pageId) { if(typeof trackPage==='function') trackPage(pageId);
   if(pageId==='admin'){setTimeout(function(){if(typeof updateAdminOverviewStats==='function')updateAdminOverviewStats();if(typeof showTab==='function')showTab('overview');},50);}
-  if(pageId==='worker-dashboard'){setTimeout(function(){if(typeof updateWorkerDashboard==='function')updateWorkerDashboard();},50);}
+  if(pageId==='worker-dashboard'){setTimeout(function(){if(typeof updateWorkerDashboard==='function')updateWorkerDashboard();if(typeof hideWorkerDemoItems==='function')hideWorkerDemoItems();},80);}
   if(pageId==='profile'){setTimeout(function(){if(typeof loadOwnProfile==='function')loadOwnProfile();},80);}
   if(pageId==='availability'){setTimeout(function(){if(typeof loadWorkerAvailability==='function')loadWorkerAvailability();},50);}
   if(pageId==='employer-dashboard'){setTimeout(function(){if(typeof updateEmployerDashboard==='function')updateEmployerDashboard();},50);}
@@ -3165,6 +3165,7 @@ function updateAdminStats(accounts) {
 // ── INIT on page load ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   loadSavedUser();
+  setTimeout(function(){ if(typeof updateWorkerDashboard==='function') updateWorkerDashboard(); if(typeof hideWorkerDemoItems==='function') hideWorkerDemoItems(); }, 200);
   
   // Hook employer registration form
   var eReg = document.getElementById('eRegForm');
@@ -3340,55 +3341,86 @@ var _origGoTo_home = null;
 
 // Update worker dashboard with real user data
 function updateWorkerDashboard() {
+  // Load from localStorage if _currentUser is null
+  if (!_currentUser) {
+    try {
+      var s = localStorage.getItem('lisaduuni_user');
+      if (s) _currentUser = JSON.parse(s);
+    } catch(e) {}
+  }
   if (!_currentUser || _currentUser.type !== 'worker') return;
   var u = _currentUser;
-  
-  // Update greeting
+
+  // ── Greeting with real name ──────────────────────────────────────
+  var firstName = u.firstName || u.email.split('@')[0] || '';
   var greeting = document.querySelector('#page-worker-dashboard h1');
-  if (greeting) greeting.textContent = 'Hei, ' + (u.firstName || u.email.split('@')[0]) + '! 👋';
-  
-  // Update nav name
-  document.querySelectorAll('.user-worker-name').forEach(function(el) {
-    el.textContent = '👤 ' + (u.firstName || '') + ' ' + (u.lastName || '');
+  if (greeting) greeting.textContent = 'Hei, ' + firstName + '! 👋';
+
+  // ── Nav name ─────────────────────────────────────────────────────
+  var fullName = (firstName + ' ' + (u.lastName||'')).trim();
+  document.querySelectorAll('.user-worker-name, .user-nav-name-text').forEach(function(el){
+    el.textContent = fullName;
   });
+  var jobOffersName = document.getElementById('jobOffersNavName');
+  if (jobOffersName) jobOffersName.textContent = fullName;
   
-  // Stats - all zero for new user
-  var views = u.profileViews || 0;
-  var contacts = u.contactsReceived || 0;
-  var rating = u.averageRating || null;
-  var gigs = u.gigsCompleted || 0;
-  
-  var vEl = document.getElementById('wStatViews');
-  if (vEl) vEl.textContent = views;
-  var cEl = document.getElementById('wStatContacts');
-  if (cEl) cEl.textContent = contacts;
-  var rEl = document.getElementById('wStatRating');
-  if (rEl) rEl.textContent = rating ? rating + '⭐' : '—';
-  var gEl = document.getElementById('wStatGigs');
-  if (gEl) gEl.textContent = gigs;
-  
-  // Referral link
-  var refCode = 'REF' + (u.firstName || 'USER').toUpperCase().replace(/[^A-Z]/g,'') + new Date().getFullYear();
+  // ── Floating menu name ───────────────────────────────────────────
+  var floatName = document.getElementById('floatingMenuName');
+  if (floatName) floatName.textContent = '👤 ' + fullName;
+
+  // ── Stats (all zero for new user) ────────────────────────────────
+  var wStatViews = document.getElementById('wStatViews');
+  if (wStatViews) wStatViews.textContent = u.profileViews || 0;
+  var wStatContacts = document.getElementById('wStatContacts');
+  if (wStatContacts) wStatContacts.textContent = u.contactsReceived || 0;
+  var wStatRating = document.getElementById('wStatRating');
+  if (wStatRating) wStatRating.textContent = u.averageRating ? u.averageRating + '⭐' : '—';
+  var wStatGigs = document.getElementById('wStatGigs');
+  if (wStatGigs) wStatGigs.textContent = u.gigsCompleted || 0;
+
+  // ── Referral link ────────────────────────────────────────────────
+  var refCode = firstName.toUpperCase().replace(/[^A-Z]/g,'') + new Date().getFullYear();
   var refEl = document.getElementById('userRefLink');
   if (refEl) refEl.textContent = 'lisaduuni.com/ref/' + refCode;
-  
-  // Reviews - empty for new user
+  var refInvited = document.getElementById('refInvited');
+  if (refInvited) refInvited.textContent = u.refInvited || 0;
+  var refJoined = document.getElementById('refJoined');
+  if (refJoined) refJoined.textContent = u.refJoined || 0;
+  var refEarned = document.getElementById('refEarned');
+  if (refEarned) refEarned.textContent = u.refEarned || 0;
+
+  // ── Reviews — empty for new user ─────────────────────────────────
   var reviewsList = document.getElementById('workerReviewsList');
-  if (reviewsList && (!u.reviews || u.reviews.length === 0)) {
-    reviewsList.innerHTML = '<div style="text-align:center;padding:24px;color:var(--ink3)"><div style="font-size:28px;margin-bottom:8px">⭐</div><p style="font-size:12px">' + 
-      (currentLang === 'en' ? 'No reviews yet. Complete your first gig to receive a review.' : 'Ei vielä arvosteluja. Suorita ensimmäinen keikka saadaksesi arvostelun.') + '</p></div>';
+  if (reviewsList) {
+    if (!u.reviews || u.reviews.length === 0) {
+      reviewsList.innerHTML = '<div style="text-align:center;padding:24px;color:var(--ink3)">' +
+        '<div style="font-size:28px;margin-bottom:8px">⭐</div>' +
+        '<p style="font-size:12px">' + (currentLang==='en' ? 
+          'No reviews yet. Complete your first gig.' : 
+          'Ei arvosteluja vielä. Suorita ensimmäinen keikka.') + '</p></div>';
+    }
   }
-  
-  // Certificates - empty for new user
-  var certList = document.getElementById('certList');
-  if (certList && (!u.certificates || u.certificates.length === 0)) {
-    certList.innerHTML = '<div style="font-size:11px;color:var(--ink3);text-align:center;padding:10px">' + 
-      (currentLang === 'en' ? 'No certificates added yet' : 'Ei todistuksia vielä') + '</div>';
+
+  // ── Inbox — empty for new user (hide demo messages) ──────────────
+  // Check if this is a brand new user (no real messages)
+  if (!u.hasRealMessages) {
+    var inboxSection = document.querySelector('#page-worker-dashboard .worker-inbox-section');
+    if (!inboxSection) {
+      // Find the inbox by looking for the demo messages and hide them
+      var allInboxDivs = document.querySelectorAll('#page-worker-dashboard [id^="workerInbox"], #page-worker-dashboard .inbox-section');
+      allInboxDivs.forEach(function(d) { d.style.display = 'none'; });
+    }
   }
-  
-  // Notifications bell
-  var bellBadge = document.querySelector('#page-worker-dashboard .btn-outline span[style*="background:var(--lime)"]');
-  if (bellBadge) bellBadge.textContent = '0';
+
+  // ── Certificates — empty for new user ────────────────────────────
+  var certSection = document.querySelector('#page-worker-dashboard .cert-section');
+  // Hide demo certificates for new users
+  var demoCerts = document.querySelectorAll('#page-worker-dashboard [data-demo="cert"]');
+  demoCerts.forEach(function(c) { c.style.display = 'none'; });
+
+  // ── Open positions count ─────────────────────────────────────────
+  var jobCount = document.getElementById('jobCount');
+  if (jobCount) jobCount.textContent = '2';
 }
 
 // Also update employer dashboard
@@ -4246,95 +4278,86 @@ function loadProfileSkills() {
 
 // ── Load logged-in worker's OWN profile ──────────────────────────────────────
 function loadOwnProfile() {
-  // Load skills always
   if (typeof loadProfileSkills === 'function') loadProfileSkills();
-  
   if (!_currentUser || _currentUser.type !== 'worker') return;
   var u = _currentUser;
   
-  // ── Update name ──
-  var nameEl = document.querySelector('#page-profile .p-name');
-  if (nameEl) nameEl.textContent = (u.firstName || '') + ' ' + (u.lastName || '');
-  
-  // ── Update initials avatar ──
-  var iniEl = document.querySelector('#page-profile .p-ini');
+  // Name
+  var nameEl = document.querySelector('#page-profile .profile-name');
+  if (nameEl) nameEl.textContent = ((u.firstName||'') + ' ' + (u.lastName||'')).trim() || 'Your Name';
+
+  // Initials
+  var iniEl = document.querySelector('#page-profile .profile-avatar-lg');
   if (iniEl) {
-    iniEl.textContent = ((u.firstName||'')[0]||'') + ((u.lastName||'')[0]||'');
+    iniEl.textContent = ((u.firstName||'W')[0] + (u.lastName||'')[0]).toUpperCase();
     iniEl.style.background = 'linear-gradient(135deg,#c8f060,#7dcc3c)';
+    iniEl.style.color = '#0a0a0a';
   }
-  
-  // ── Update role/city subtitle ──
-  var roleEl = document.querySelector('#page-profile .p-role');
-  if (roleEl) roleEl.textContent = (u.profession || (currentLang==='en' ? 'Worker' : 'Työntekijä')) + ' · ' + (u.city || '');
-  
-  // ── Update details panel ──
-  var cityEl = document.querySelector('#page-profile .detail-city');
-  if (cityEl) cityEl.textContent = u.city || '—';
-  
-  var langEl = document.querySelector('#page-profile .detail-lang');
-  if (langEl) langEl.textContent = (u.languages || 'FI');
-  
-  var indEl = document.querySelector('#page-profile .detail-industry');
-  if (indEl) indEl.textContent = u.profession || '—';
-  
-  var wtEl = document.querySelector('#page-profile .detail-wtype');
-  if (wtEl) wtEl.textContent = currentLang === 'en' ? 'Substitute' : 'Sijainen';
-  
-  var expEl = document.querySelector('#page-profile .detail-exp');
-  if (expEl) expEl.textContent = u.experience || (currentLang === 'en' ? 'New member' : 'Uusi jäsen');
-  
-  // ── Update About text ──
-  var aboutEl = document.querySelector('#page-profile .p-about-text');
-  if (aboutEl) {
+
+  // Role title
+  var titleEl = document.getElementById('profileTitle');
+  if (titleEl) titleEl.textContent = (u.profession || 'Worker') + ' · ' + (u.city || '');
+
+  // Bio
+  var bioEl = document.getElementById('profileBio');
+  if (bioEl) {
     if (u.about) {
-      aboutEl.textContent = u.about;
+      bioEl.textContent = u.about;
+      bioEl.style.color = 'var(--ink2)';
+      bioEl.style.fontStyle = 'normal';
     } else {
-      aboutEl.innerHTML = '<span style="color:var(--ink4);font-style:italic">' + 
-        (currentLang === 'en' ? 'No description yet. Click Edit availability to add your bio.' : 
-        'Ei kuvausta vielä. Lisää kuvaus muokkaamalla profiilia.') + '</span>';
+      bioEl.textContent = currentLang==='en' ? 'No description yet.' : 'Ei kuvausta vielä.';
+      bioEl.style.color = 'var(--ink4)';
+      bioEl.style.fontStyle = 'italic';
     }
   }
-  
-  // ── Update availability tags ──
-  var availBadge = document.querySelector('#page-profile .avail-badge');
-  if (availBadge) {
-    var hasAvail = _availDays && _availDays.length > 0;
-    availBadge.textContent = hasAvail ? (currentLang==='en' ? 'Available' : 'Saatavilla') : (currentLang==='en' ? 'Set availability' : 'Aseta saatavuus');
-  }
-  
-  // ── Update calendar with user's own availability ──
+
+  // Detail values
+  var indEl = document.getElementById('industryVal');
+  if (indEl) indEl.textContent = u.profession || '—';
+  var typeEl = document.getElementById('typeVal');
+  if (typeEl) typeEl.textContent = currentLang==='en' ? 'Substitute' : 'Sijainen';
+  var expEl = document.getElementById('expVal');
+  if (expEl) expEl.textContent = u.experience || (currentLang==='en' ? 'New member' : 'Uusi jäsen');
+
+  // Calendar
   if (u.availDays) _availDays = u.availDays;
-  if (u.shiftTimes) _shiftTimes = u.shiftTimes || {};
+  if (u.shiftTimes) _shiftTimes = Object.assign({}, u.shiftTimes);
   _calDate = new Date(2026, 4, 1);
   if (typeof renderCalendar === 'function') renderCalendar();
-  
-  // ── Update Send message button ──
+
+  // Change Send message to Edit profile
   var msgBtn = document.getElementById('openModal');
   if (msgBtn) {
-    // If viewing own profile, change button to "Edit profile"
-    msgBtn.textContent = currentLang === 'en' ? '✏️ Edit profile' : '✏️ Muokkaa profiilia';
+    msgBtn.textContent = currentLang==='en' ? '✏️ Edit profile' : '✏️ Muokkaa profiilia';
     msgBtn.style.background = 'var(--bg2)';
     msgBtn.style.color = 'var(--lime)';
     msgBtn.style.border = '1px solid rgba(200,240,96,0.3)';
     msgBtn.onclick = function() { goTo('availability'); };
   }
-  
-  // ── Update availability tags in header ──
-  var professionTag = document.querySelector('#page-profile .p-tags .tag-profession');
-  if (!professionTag) {
-    // Update existing tags
-    var tags = document.querySelectorAll('#page-profile .p-tags span');
-    if (tags[0] && u.profession) tags[0].textContent = u.profession;
-  }
-  
-  // ── Show "Updated" date ──
-  var updatedEl = document.querySelector('#page-profile .p-updated');
-  if (updatedEl && u.registeredAt) {
-    var d = new Date(u.registeredAt);
-    updatedEl.textContent = (currentLang === 'en' ? 'Updated ' : 'Päivitetty ') + d.toLocaleDateString('fi-FI');
-  }
-  
-  console.log('✅ Loaded own profile for:', u.firstName, u.lastName);
+}
+
+
+// Hide demo items for real users
+function hideWorkerDemoItems() {
+  // Hide demo inbox messages
+  document.querySelectorAll('[data-demo="inbox"]').forEach(function(el) {
+    el.style.display = 'none';
+  });
+  // Hide demo certificates  
+  document.querySelectorAll('[data-demo="cert"]').forEach(function(el) {
+    el.style.display = 'none';
+  });
+  // Update inbox badge to 0
+  var inboxBadge = document.querySelector('#page-worker-dashboard .inbox-badge');
+  if (inboxBadge) inboxBadge.textContent = '0';
+  // Update the "3 uutta" badge
+  var newBadges = document.querySelectorAll('#page-worker-dashboard [style*="background:var(--lime)"][style*="border-radius:100px"]');
+  newBadges.forEach(function(b) {
+    if (b.textContent.includes('uutta') || b.textContent.includes('new')) {
+      b.textContent = '0';
+    }
+  });
 }
 
 </script>
@@ -4399,7 +4422,7 @@ function loadOwnProfile() {
         <div style="display:flex;flex-direction:column;gap:8px">
 
           <!-- Message 1 - Unread -->
-          <div onclick="openConversation('Mehiläinen Oy','Työnantaja','🏥')" style="background:var(--bg);border:1px solid rgba(200,240,96,0.3);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.6)'" onmouseout="this.style.borderColor='rgba(200,240,96,0.3)'">
+          <div data-demo="inbox" onclick="openConversation('Mehiläinen Oy','Työnantaja','🏥')" style="background:var(--bg);border:1px solid rgba(200,240,96,0.3);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.6)'" onmouseout="this.style.borderColor='rgba(200,240,96,0.3)'">
             <div style="width:38px;height:38px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏥</div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
@@ -4412,7 +4435,7 @@ function loadOwnProfile() {
           </div>
 
           <!-- Message 2 - Unread -->
-          <div onclick="openConversation('HYKS','Työnantaja','🏥')" style="background:var(--bg);border:1px solid rgba(200,240,96,0.3);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.6)'" onmouseout="this.style.borderColor='rgba(200,240,96,0.3)'">
+          <div data-demo="inbox" onclick="openConversation('HYKS','Työnantaja','🏥')" style="background:var(--bg);border:1px solid rgba(200,240,96,0.3);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.6)'" onmouseout="this.style.borderColor='rgba(200,240,96,0.3)'">
             <div style="width:38px;height:38px;background:linear-gradient(135deg,#6080f0,#3c5acc);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏥</div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
@@ -4425,7 +4448,7 @@ function loadOwnProfile() {
           </div>
 
           <!-- Message 3 - Unread -->
-          <div onclick="openConversation('Folkhälsan','Työnantaja','🏥')" style="background:var(--bg);border:1px solid rgba(200,240,96,0.3);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.6)'" onmouseout="this.style.borderColor='rgba(200,240,96,0.3)'">
+          <div data-demo="inbox" onclick="openConversation('Folkhälsan','Työnantaja','🏥')" style="background:var(--bg);border:1px solid rgba(200,240,96,0.3);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;gap:12px;align-items:flex-start;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(200,240,96,0.6)'" onmouseout="this.style.borderColor='rgba(200,240,96,0.3)'">
             <div style="width:38px;height:38px;background:linear-gradient(135deg,#f0a060,#cc7832);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🏥</div>
             <div style="flex:1;min-width:0">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
