@@ -3503,73 +3503,68 @@ async function supabaseRequest(method, table, data = null, filters = null) {
 async function registerNewEmployer(e) {
   if (e) e.preventDefault();
   
-  const form = document.getElementById('eRegForm');
-  if (!form) return;
+  var form = document.getElementById('eRegForm');
+  if (!form) { console.error('eRegForm not found'); return; }
   
-  // Read all form fields reliably
-  const allTextInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
-  const company = (form.querySelector('input[name="company"]') || allTextInputs[0])?.value?.trim();
-  const businessId = (form.querySelector('input[name="businessId"]') || allTextInputs[1])?.value?.trim();
-  const contact = (form.querySelector('input[name="contact"]') || allTextInputs[2])?.value?.trim();
-  const email = (form.querySelector('input[name="email"]') || form.querySelector('input[type="email"]'))?.value?.trim();
-  const phone = (form.querySelector('input[name="phone"]') || form.querySelector('input[type="tel"]'))?.value?.trim();
-  const allSelects = form.querySelectorAll('select');
-  const industry = (form.querySelector('select[name="industry"]') || allSelects[0])?.value;
-  const citySelect = (form.querySelector('select[name="city"]') || allSelects[1])?.value;
-  const description = form.querySelector('textarea')?.value?.trim();
-  const password = form.querySelector('input[type="password"]')?.value;
-  
-  if (!company || !email) {
-    alert(currentLang === 'en' ? 
-      'Please fill in company name and email.' : 
-      'Täytä yrityksen nimi ja sähköposti.');
-    return;
-  }
-  
-  // Show loading
-  const btn = form.querySelector('button[type="submit"]');
-  const origText = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = currentLang === 'en' ? 'Saving...' : 'Tallennetaan...'; btn.disabled = true; }
-  
-  // Save to Supabase
-  const result = await supabaseRequest('POST', 'employers', {
-    company_name: company,
-    business_id: businessId,
-    email: email,
-    phone: phone,
-    contact_person: contact,
-    industry: industry,
-    city: citySelect,
-    description: description,
-    plan: 'Starter'
+  // ── Collect ALL inputs from the form ──────────────────────────────
+  var allInputs = form.querySelectorAll('input, select, textarea');
+  var data = {};
+  allInputs.forEach(function(el) {
+    if (el.name) data[el.name] = el.value;
   });
   
-  if (btn) { btn.textContent = origText; btn.disabled = false; }
+  // Get values by name first, then by position as fallback
+  var textInputs = Array.from(form.querySelectorAll('input[type="text"]'));
+  var emailInput = form.querySelector('input[type="email"]') || form.querySelector('input[name="email"]');
+  var telInput = form.querySelector('input[type="tel"]') || form.querySelector('input[name="phone"]');
+  var passInput = form.querySelector('input[type="password"]');
+  var selects = form.querySelectorAll('select');
+  var textarea = form.querySelector('textarea');
   
-  if (result.error) {
-    // Check if duplicate email
-    if (result.error.code === '23505' || JSON.stringify(result.error).includes('duplicate')) {
-      alert(currentLang === 'en' ? 
-        'This email is already registered. Please log in instead.' : 
-        'Tämä sähköposti on jo rekisteröity. Kirjaudu sisään.');
-      return;
-    }
+  var company  = data.company  || (textInputs[0] && textInputs[0].value.trim()) || '';
+  var businessId = data.businessId || (textInputs[1] && textInputs[1].value.trim()) || '';
+  var contact  = data.contact  || (textInputs[2] && textInputs[2].value.trim()) || '';
+  var email    = data.email    || (emailInput && emailInput.value.trim()) || '';
+  var phone    = data.phone    || (telInput && telInput.value.trim()) || '';
+  var industry = data.industry || (selects[0] && selects[0].value) || '';
+  var city     = data.city     || (selects[1] && selects[1].value) || '';
+  var description = textarea ? textarea.value.trim() : '';
+  
+  console.log('Employer reg data:', {company, email, contact, city, industry});
+  
+  // ── Validation ────────────────────────────────────────────────────
+  if (!company) {
     alert(currentLang === 'en' ? 
-      'Registration failed. Please try again.' : 
-      'Rekisteröinti epäonnistui. Yritä uudelleen.');
+      'Please fill in your company name (first field at the top).' : 
+      'Täytä yrityksen nimi (ensimmäinen kenttä ylhäällä).');
+    return;
+  }
+  if (!email) {
+    alert(currentLang === 'en' ? 
+      'Please fill in your email address.' : 
+      'Täytä sähköpostiosoite.');
     return;
   }
   
-  // Success - save to localStorage as well for session
-  const user = {
+  // ── Show loading ──────────────────────────────────────────────────
+  var btn = form.querySelector('button[type="submit"]');
+  var origText = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = currentLang === 'en' ? 'Creating account...' : 'Luodaan tiliä...'; btn.disabled = true; }
+  
+  // ── Create user and save locally FIRST ───────────────────────────
+  var user = {
     type: 'employer',
     company: company,
+    businessId: businessId,
+    contact: contact,
     email: email,
-    city: citySelect,
+    phone: phone,
     industry: industry,
+    city: city,
+    description: description,
     plan: 'Starter',
     planPrice: '€39',
-    dbId: result.data?.[0]?.id,
+    trialDays: 14,
     registeredAt: new Date().toISOString()
   };
   
@@ -3577,7 +3572,30 @@ async function registerNewEmployer(e) {
   saveToAccounts(user);
   setTimeout(updateAllNavNames, 100);
   
-  // Navigate to welcome
+  if (btn) { btn.textContent = origText; btn.disabled = false; }
+  
+  // ── Try Supabase in background ────────────────────────────────────
+  supabaseRequest('POST', 'employers', {
+    company_name: company,
+    business_id: businessId,
+    email: email,
+    phone: phone,
+    contact_person: contact,
+    industry: industry,
+    city: city,
+    description: description,
+    plan: 'Starter'
+  }).then(function(result) {
+    if (result.data && result.data[0]) {
+      user.dbId = result.data[0].id;
+      saveUser(user);
+    }
+    console.log('Supabase employer save:', result.error ? 'failed (ok)' : 'success');
+  }).catch(function(e) {
+    console.log('Supabase error (non-critical):', e);
+  });
+  
+  // ── Navigate to welcome ───────────────────────────────────────────
   goTo('employer-welcome');
 }
 
