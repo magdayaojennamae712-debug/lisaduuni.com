@@ -1752,6 +1752,7 @@ document.addEventListener('DOMContentLoaded', initLang);
 
 // ---------- Router ----------
 function goTo(pageId) { if(typeof trackPage==='function') trackPage(pageId);
+  if(pageId==='home'){var fb=document.getElementById('floatingUserMenu');if(fb&&!_currentUser)fb.style.display='none';}
   if(pageId==='admin'){setTimeout(function(){if(typeof updateAdminOverviewStats==='function')updateAdminOverviewStats();if(typeof showTab==='function')showTab('overview');},50);}
   if(pageId==='worker-dashboard'){setTimeout(function(){if(typeof updateWorkerDashboard==='function')updateWorkerDashboard();if(typeof hideWorkerDemoItems==='function')hideWorkerDemoItems();},80);}
   if(pageId==='profile'){setTimeout(function(){if(typeof loadOwnProfile==='function')loadOwnProfile();},80);}
@@ -3090,11 +3091,24 @@ function loadSavedUser() {
   try {
     var saved = localStorage.getItem('lisaduuni_user');
     if (saved) {
-      _currentUser = JSON.parse(saved);
-      updateUIForUser(_currentUser);
-      setTimeout(updateAllNavNames, 100);
+      var user = JSON.parse(saved);
+      // Validate the session has required fields
+      if (user && user.type && (user.email || user.company || user.firstName)) {
+        _currentUser = user;
+        updateUIForUser(_currentUser);
+        setTimeout(updateAllNavNames, 100);
+        setTimeout(showFloatingMenu, 200);
+      } else {
+        // Invalid session - clear it
+        localStorage.removeItem('lisaduuni_user');
+        _currentUser = null;
+      }
     }
-  } catch(e) { console.log('No saved user'); }
+  } catch(e) {
+    console.log('Session load error:', e);
+    localStorage.removeItem('lisaduuni_user');
+    _currentUser = null;
+  }
 }
 
 // ── Save user to localStorage ─────────────────────────────────────
@@ -3161,32 +3175,46 @@ function updateUIForUser(user) {
 
 // ── LOGOUT ────────────────────────────────────────────────────────
 function logoutUser() {
-  // Close all modals first
+  // ── Close all modals and menus first ─────────────────────────────
   var signModal = document.getElementById('signOutModal');
   if (signModal) signModal.style.display = 'none';
   var floatMenu = document.getElementById('floatingMenuDropdown');
   if (floatMenu) floatMenu.style.display = 'none';
   var floatBtn = document.getElementById('floatingUserMenu');
   if (floatBtn) floatBtn.style.display = 'none';
-  
-  // Clear user data
+
+  // ── Clear ALL user session data ───────────────────────────────────
   _currentUser = null;
   _isAdminLoggedIn = false;
-  
-  try { localStorage.removeItem('lisaduuni_user'); } catch(e) {}
-  
-  // Navigate home after short delay to let modal close
+  window._currentConvKey = null;
+  window._currentConvName = null;
+
+  // Clear localStorage session
+  try {
+    localStorage.removeItem('lisaduuni_user');
+    sessionStorage.clear();
+  } catch(e) {}
+
+  // ── Navigate to home ──────────────────────────────────────────────
   setTimeout(function() {
-    // Show all pages and navigate to home
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.page').forEach(function(p) {
+      p.classList.remove('active');
+    });
     var homePage = document.getElementById('page-home');
     if (homePage) homePage.classList.add('active');
     window.scrollTo(0, 0);
-    // Update language
+    
+    // Update UI to logged-out state
     if (typeof applyTranslations === 'function') applyTranslations();
     if (typeof applyBilingualTranslations === 'function') applyBilingualTranslations(currentLang);
     if (typeof updateLangToggle === 'function') updateLangToggle();
-  }, 100);
+    
+    // Make sure floating menu is hidden
+    var fb = document.getElementById('floatingUserMenu');
+    if (fb) fb.style.display = 'none';
+    
+    console.log('✅ Logged out successfully');
+  }, 150);
 }
 
 // ── ACCOUNTS REGISTRY (all registered users) ─────────────────────
@@ -4176,17 +4204,39 @@ function toggleUserMenu() {
 function showFloatingMenu() {
   var menu = document.getElementById('floatingUserMenu');
   if (!menu) return;
-  if (_currentUser) {
-    menu.style.display = 'block';
-    var nameEl = document.getElementById('floatingMenuName');
-    var name = _currentUser.type === 'worker' ? 
-      ((_currentUser.firstName || '') + ' ' + (_currentUser.lastName || '')).trim() :
-      (_currentUser.company || _currentUser.email || '');
-    if (nameEl && name) nameEl.textContent = '👤 ' + name;
-    var profileBtn = document.getElementById('floatingMenuProfile');
-    if (profileBtn) profileBtn.style.display = _currentUser.type === 'worker' ? 'flex' : 'none';
-  } else {
+
+  // Always re-check localStorage for current session
+  if (!_currentUser) {
+    try {
+      var s = localStorage.getItem('lisaduuni_user');
+      if (s) _currentUser = JSON.parse(s);
+    } catch(e) {}
+  }
+
+  // Only show if genuinely logged in
+  if (!_currentUser) {
     menu.style.display = 'none';
+    return;
+  }
+
+  menu.style.display = 'block';
+
+  // Update name display
+  var nameEl = document.getElementById('floatingMenuName');
+  var displayName = '';
+  if (_currentUser.type === 'worker') {
+    displayName = ((_currentUser.firstName||'') + ' ' + (_currentUser.lastName||'')).trim();
+  } else if (_currentUser.type === 'employer') {
+    displayName = _currentUser.company || _currentUser.email || '';
+  } else {
+    displayName = _currentUser.email || 'Admin';
+  }
+  if (nameEl) nameEl.textContent = '👤 ' + displayName;
+
+  // Show/hide profile button (workers only)
+  var profileBtn = document.getElementById('floatingMenuProfile');
+  if (profileBtn) {
+    profileBtn.style.display = _currentUser.type === 'worker' ? 'flex' : 'none';
   }
 }
 
