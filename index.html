@@ -454,8 +454,14 @@ td{color:var(--ink2)}
     <a onclick="goTo('home');return false;" href='#' class="nav-logo">Lisaduuni<span>.com</span></a>
     <div class="nav-links">
       <a onclick="goTo('login-gate');return false;" href='#' class="btn-outline" data-i18n="nav_search"><span data-fi="Hae työntekijöitä" data-en="Find workers">Hae työntekijöitä</span></a>
-      <a onclick="goTo('worker-reg');return false;" href='#' class="btn-outline" data-i18n="nav_worker"><span data-fi="Olen työntekijä" data-en="I'm a worker">Olen työntekijä</span></a>
-      <a onclick="goTo('employer-reg');return false;" href='#' class="btn-primary" data-i18n="nav_employer"><span data-fi="Olen työnantaja" data-en="I'm an employer">Olen työnantaja</span></a>
+      <div id="searchNavGuest" style="display:flex;gap:8px">
+        <a onclick="goTo('worker-reg');return false;" href='#' class="btn-outline" data-i18n="nav_worker"><span data-fi="Olen työntekijä" data-en="I'm a worker">Olen työntekijä</span></a>
+        <a onclick="goTo('employer-reg');return false;" href='#' class="btn-primary" data-i18n="nav_employer"><span data-fi="Olen työnantaja" data-en="I'm an employer">Olen työnantaja</span></a>
+      </div>
+      <div id="searchNavLoggedIn" style="display:none;align-items:center;gap:8px">
+        <span id="searchNavName" style="font-size:12px;color:var(--lime)">🏢</span>
+        <a onclick="goTo('employer-dashboard');return false;" href='#' class="btn-outline" style="font-size:12px;padding:7px 14px"><span data-fi="Hallintapaneeli" data-en="Dashboard">Hallintapaneeli</span></a>
+      </div>
       <div class="lang-switcher">
         <button class="lang-btn lang-active" data-lang="fi" onclick="setLang('fi')">🇫🇮 FI</button>
         <button class="lang-btn" data-lang="en" onclick="setLang('en')">🇬🇧 EN</button>
@@ -1751,6 +1757,7 @@ function goTo(pageId) { if(typeof trackPage==='function') trackPage(pageId);
   if(pageId==='profile'){setTimeout(function(){if(typeof loadOwnProfile==='function')loadOwnProfile();},80);}
   if(pageId==='availability'){setTimeout(function(){if(typeof loadWorkerAvailability==='function')loadWorkerAvailability();},50);}
   if(pageId==='employer-dashboard'){setTimeout(function(){if(typeof updateEmployerDashboard==='function')updateEmployerDashboard();},50);}
+  if(pageId==='employer-welcome'){setTimeout(function(){if(typeof updateEmployerDashboard==='function')updateEmployerDashboard();},80);}
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   var t = document.getElementById('page-' + pageId);
   if (t) { t.classList.add('active'); window.scrollTo(0,0); }
@@ -1758,7 +1765,7 @@ function goTo(pageId) { if(typeof trackPage==='function') trackPage(pageId);
   applyBilingualTranslations(currentLang);
   updateLangToggle();
   try{ if(typeof renderCalendar==='function') renderCalendar(); }catch(e){}
-  try{ if(pageId==='search') initMap(); }catch(e){}
+  try{ if(pageId==='search'){setTimeout(function(){if(typeof injectRealWorkers==='function')injectRealWorkers();if(typeof showLoggedInSearchBar==='function')showLoggedInSearchBar();},100);}if(pageId==='search_skip') initMap(); }catch(e){}
   try{ if(typeof renderTables==='function')   renderTables();   }catch(e){}
   try{ if(typeof renderWorkers==='function')  renderWorkers(window._workers||[]); }catch(e){}
 }
@@ -3173,7 +3180,29 @@ function guardedSearch() {
 
 // Show logged-in employer bar on search page
 function showLoggedInSearchBar() {
-  if (!_currentUser) return;
+  if (!_currentUser) {
+    // Guest - show guest nav, hide logged-in nav
+    var guestNav = document.getElementById('searchNavGuest');
+    var loggedNav = document.getElementById('searchNavLoggedIn');
+    if (guestNav) guestNav.style.display = 'flex';
+    if (loggedNav) loggedNav.style.display = 'none';
+    return;
+  }
+  
+  // Logged in - show company/name in nav
+  var guestNav = document.getElementById('searchNavGuest');
+  var loggedNav = document.getElementById('searchNavLoggedIn');
+  var nameEl = document.getElementById('searchNavName');
+  
+  if (guestNav) guestNav.style.display = 'none';
+  if (loggedNav) loggedNav.style.display = 'flex';
+  if (nameEl) {
+    var name = _currentUser.type === 'employer' ? 
+      '🏢 ' + (_currentUser.company || _currentUser.email) :
+      '👤 ' + (_currentUser.firstName || _currentUser.email);
+    nameEl.textContent = name;
+  }
+  
   var existing = document.getElementById('searchLoginBar');
   if (existing) { existing.style.display = 'flex'; return; }
   
@@ -3196,40 +3225,49 @@ function injectRealWorkers() {
   var accounts = getAccounts();
   var realWorkers = accounts.filter(function(a) { return a.type === 'worker'; });
   
-  if (realWorkers.length === 0) return; // No real workers yet, keep demo workers
+  if (realWorkers.length === 0) return;
   
-  // Convert real worker accounts to worker card format
+  // Remove previously injected real workers to avoid duplicates
+  _workers = _workers.filter(function(w) { return !w.isReal; });
+  
+  // Convert real worker accounts to worker card format  
+  var colors = ['#0a2e1a','#0a1a2e','#2e0a1a','#1a2e0a','#2e1a0a'];
+  var textColors = ['#c8f060','#60b0f0','#f06090','#90f060','#f0a060'];
+  
   var newWorkers = realWorkers.map(function(w, idx) {
+    var fn = (w.firstName || 'W').trim();
+    var ln = (w.lastName || '').trim();
+    var ini = (fn[0] || 'W').toUpperCase() + (ln[0] || '').toUpperCase();
     return {
       id: 100 + idx,
-      name: w.firstName + ' ' + w.lastName,
-      ini: (w.firstName[0] || 'W') + (w.lastName[0] || ''),
-      col: '#0a2e1a',
-      tc: '#c8f060',
+      name: fn + (ln ? ' ' + ln : ''),
+      ini: ini || 'W',
+      col: colors[idx % colors.length],
+      tc: textColors[idx % textColors.length],
       fi: w.profession || 'Sijainen',
-      en: w.profession || 'Substitute worker',
+      en: w.profession || 'Substitute',
       city: w.city || 'Helsinki',
       lang: ['FI'],
       type_fi: ['Sijainen'],
       type_en: ['Substitute'],
       avail_fi: 'Saatavilla heti',
       avail_en: 'Available immediately',
-      skills: [w.profession || 'Sijainen'],
+      skills: w.skills || [w.profession || 'Sijainen'],
       profile: true,
       isReal: true
     };
   });
   
-  // Prepend real workers to the top of the list
-  // They show with a "✓ Verified member" badge
-  newWorkers.forEach(function(w) {
-    if (!_workers.find(function(x) { return x.id === w.id; })) {
-      _workers.unshift(w);
-    }
+  // Add real workers to TOP of list
+  newWorkers.reverse().forEach(function(w) {
+    _workers.unshift(w);
   });
   
-  // Re-render
+  // Update count and re-render
   filterWorkers();
+  
+  var countEl = document.getElementById('workerCount');
+  if (countEl) countEl.textContent = _workers.length;
 }
 
 
@@ -3374,27 +3412,55 @@ function updateWorkerDashboard() {
 
 // Also update employer dashboard
 function updateEmployerDashboard() {
+  if (!_currentUser) {
+    try { var s = localStorage.getItem('lisaduuni_user'); if(s) _currentUser=JSON.parse(s); } catch(e) {}
+  }
   if (!_currentUser || _currentUser.type !== 'employer') return;
   var u = _currentUser;
-  
-  // Company name
+  var companyName = u.company || u.email || '';
+
+  // ── Welcome page ──────────────────────────────────────────────────
+  var wName = document.getElementById('welcomeCompanyName');
+  if (wName) wName.textContent = '🏢 ' + companyName;
+
+  // ── Employer dashboard h1 ─────────────────────────────────────────
   var h1 = document.querySelector('#page-employer-dashboard h1');
-  if (h1) h1.textContent = u.company || u.email;
-  
-  document.querySelectorAll('.user-company-name').forEach(function(el) {
-    el.textContent = '🏢 ' + (u.company || u.email);
+  if (h1) h1.textContent = companyName;
+
+  // ── Nav company name everywhere ───────────────────────────────────
+  document.querySelectorAll('.user-company-name').forEach(function(el){
+    el.textContent = '🏢 ' + companyName;
+  });
+  document.querySelectorAll('.user-nav-name-text').forEach(function(el){
+    el.textContent = companyName;
   });
   
-  // Plan display
+  // ── Plan display ──────────────────────────────────────────────────
   var planEl = document.querySelector('.user-plan-display');
-  if (planEl) planEl.textContent = (u.plan || 'Starter') + ' — ' + (u.planPrice || '€39') + '/kk';
+  if (planEl) planEl.textContent = (u.plan||'Starter') + ' — ' + (u.planPrice||'€39') + '/kk';
   
-  // Renews date
-  var renewDate = document.querySelector('#page-employer-dashboard .user-renews');
+  // ── Floating menu name ────────────────────────────────────────────
+  var floatName = document.getElementById('floatingMenuName');
+  if (floatName) floatName.textContent = '👤 ' + companyName;
   
-  // Stats - zero for new employer
-  var statNums = document.querySelectorAll('#page-employer-dashboard .sc-num, #page-employer-dashboard [style*="font-size:30px"]');
-  // Leave employer stats as they are (show potential)
+  // ── Employer dashboard stats reset to zero for new employer ───────
+  var statNums = document.querySelectorAll('#page-employer-dashboard .sc-num');
+  // Only reset if no real data
+  if (!u.searchesMade && statNums.length >= 4) {
+    statNums[0].textContent = '0';
+    statNums[1].textContent = '0';
+    statNums[2].textContent = '0';
+    statNums[3].textContent = '∞';
+  }
+  
+  // ── Hide demo bookings for new employer ───────────────────────────
+  if (!u.hasRealBookings) {
+    document.querySelectorAll('#page-employer-dashboard [data-demo="booking"]').forEach(function(el){
+      el.style.display = 'none';
+    });
+    var bookEmpty = document.getElementById('emptyBookingsMsg');
+    if (bookEmpty) bookEmpty.style.display = 'block';
+  }
 }
 
 // Hook into goTo to update dashboards
@@ -4684,6 +4750,8 @@ function confirmShift() {
     </div>
   </div>
 
+  <!-- Empty bookings message -->
+  <div id="emptyBookingsMsg" style="display:none;text-align:center;padding:20px;color:var(--ink3);font-size:12px"><span data-fi="Ei buukauksia vielä. Etsi sijaisia aloittaaksesi." data-en="No bookings yet. Find substitutes to get started.">No bookings yet. Find substitutes to get started.</span></div>
   <!-- Booking confirmation -->
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px">
     <h3 style="font-family:var(--font-head);font-size:16px;font-weight:400;color:var(--ink);margin-bottom:14px">📋 Uusi buukaus</h3>
