@@ -2800,57 +2800,6 @@ function selectShift(shift) {
   }
 }
 
-function confirmShift() {
-  if(!_currentPickerDay) return;
-  
-  var shift = _selectedShift;
-  
-  if(shift === 'remove') {
-    // Remove from available days
-    _availDays = _availDays.filter(function(d){return d !== _currentPickerDay;});
-    delete _shiftTimes[_currentPickerDay];
-    
-    // Show saved message briefly then close
-    document.getElementById('shiftSavedMsg').textContent = '🚫 Removed / Poistettu';
-    document.getElementById('shiftSavedMsg').style.display = 'block';
-    document.getElementById('confirmShiftBtn').style.display = 'none';
-    setTimeout(function(){
-      closeShiftPicker();
-      renderCalendar();
-    }, 1000);
-    return;
-  }
-  
-  if(shift === 'custom') {
-    var start = document.getElementById('customStart').value;
-    var end = document.getElementById('customEnd').value;
-    if(start && end) {
-      // Convert HH:MM to H:MM format
-      var s = start.replace(/^0/, '').replace(':00','');
-      var e = end.replace(/^0/, '').replace(':00','');
-      shift = s + '–' + e;
-    }
-  }
-  
-  // Add/update this day
-  if(!_availDays.includes(_currentPickerDay)) {
-    _availDays.push(_currentPickerDay);
-    _availDays.sort(function(a,b){return a-b;});
-  }
-  _shiftTimes[_currentPickerDay] = shift;
-  
-  // Show success
-  document.getElementById('shiftSavedMsg').textContent = '✅ Saved: ' + shift + ' / Tallennettu!';
-  document.getElementById('shiftSavedMsg').style.display = 'block';
-  document.getElementById('confirmShiftBtn').style.display = 'none';
-  
-  // Close after 1 second and refresh calendar
-  setTimeout(function(){
-    closeShiftPicker();
-    renderCalendar();
-  }, 900);
-}
-
 // Close modal when clicking outside
 document.addEventListener('click', function(e) {
   var modal = document.getElementById('shiftPickerModal');
@@ -3497,70 +3446,6 @@ function openAvailShiftPicker(day, el) {
 }
 
 // Override confirmShift to handle both profile and availability calendars
-var _origConfirmShift = confirmShift;
-function confirmShift() {
-  if (window._shiftPickerMode === 'avail') {
-    // Save to availability calendar
-    if(!_currentPickerDay) return;
-    var shift = _selectedShift;
-    
-    if(shift === 'remove') {
-      _avSel.delete(_currentPickerDay);
-      delete _avShiftTimes[_currentPickerDay];
-      var ssm = document.getElementById('shiftSavedMsg');
-      if(ssm) { ssm.textContent = '🚫 Removed / Poistettu'; ssm.style.display = 'block'; }
-      var cfb = document.getElementById('confirmShiftBtn');
-      if(cfb) cfb.style.display = 'none';
-      setTimeout(function(){
-        closeShiftPicker();
-        renderAvailCal();
-        var sc = document.getElementById('selCount');
-        if(sc) sc.textContent = _avSel.size;
-      }, 900);
-      return;
-    }
-    
-    if(shift === 'custom') {
-      var s = document.getElementById('customStart');
-      var e = document.getElementById('customEnd');
-      if(s && e) {
-        var sv = s.value.replace(/^0/,'').replace(':00','');
-        var ev = e.value.replace(/^0/,'').replace(':00','');
-        shift = sv + '–' + ev;
-      }
-    }
-    
-    if(!shift) return;
-    
-    _avSel.add(_currentPickerDay);
-    _avShiftTimes[_currentPickerDay] = shift;
-    
-    var ssm = document.getElementById('shiftSavedMsg');
-    if(ssm) { ssm.textContent = '✅ Saved: ' + shift; ssm.style.display = 'block'; }
-    var cfb = document.getElementById('confirmShiftBtn');
-    if(cfb) cfb.style.display = 'none';
-    
-    // Save to user's profile
-    if(_currentUser) {
-      _currentUser.availDays = Array.from(_avSel);
-      _currentUser.shiftTimes = _avShiftTimes;
-      localStorage.setItem('lisaduuni_user', JSON.stringify(_currentUser));
-    }
-    
-    setTimeout(function(){
-      closeShiftPicker();
-      renderAvailCal();
-      var sc = document.getElementById('selCount');
-      if(sc) sc.textContent = _avSel.size;
-    }, 900);
-    
-  } else {
-    // Profile calendar mode - use original
-    if(_origConfirmShift && typeof _origConfirmShift === 'function') {
-      _origConfirmShift();
-    }
-  }
-}
 
 // Also load saved availability when worker opens availability page
 function loadWorkerAvailability() {
@@ -4358,6 +4243,70 @@ function hideWorkerDemoItems() {
       b.textContent = '0';
     }
   });
+}
+
+
+// ── Single confirmShift - handles both profile AND availability calendars ──────
+function confirmShift() {
+  if (!_currentPickerDay) return;
+  
+  var shift = _selectedShift;
+  if (!shift) return;
+  
+  var ssm = document.getElementById('shiftSavedMsg');
+  var cfb = document.getElementById('confirmShiftBtn');
+  
+  // Handle custom time
+  if (shift === 'custom') {
+    var cs = document.getElementById('customStart');
+    var ce = document.getElementById('customEnd');
+    if (cs && ce && cs.value && ce.value) {
+      var sv = cs.value.replace(/^0/,'').replace(':00','');
+      var ev = ce.value.replace(/^0/,'').replace(':00','');
+      shift = sv + '–' + ev;
+    } else {
+      return;
+    }
+  }
+  
+  if (window._shiftPickerMode === 'avail') {
+    // ── Availability page calendar ──
+    _avSel.add(_currentPickerDay);
+    _avShiftTimes[_currentPickerDay] = shift;
+    
+    // Save to user account
+    if (_currentUser) {
+      _currentUser.availDays = Array.from(_avSel);
+      _currentUser.shiftTimes = Object.assign({}, _avShiftTimes);
+      try { localStorage.setItem('lisaduuni_user', JSON.stringify(_currentUser)); } catch(e) {}
+    }
+    
+    if (ssm) { ssm.textContent = '✅ Saved: ' + shift; ssm.style.display = 'block'; ssm.style.color = 'var(--lime)'; }
+    if (cfb) cfb.style.display = 'none';
+    
+    setTimeout(function() {
+      closeShiftPicker();
+      renderAvailCal();
+      var sc = document.getElementById('selCount');
+      if (sc) sc.textContent = _avSel.size;
+    }, 800);
+    
+  } else {
+    // ── Profile page calendar ──
+    if (!_availDays.includes(_currentPickerDay)) {
+      _availDays.push(_currentPickerDay);
+      _availDays.sort(function(a,b){return a-b;});
+    }
+    _shiftTimes[_currentPickerDay] = shift;
+    
+    if (ssm) { ssm.textContent = '✅ Saved: ' + shift; ssm.style.display = 'block'; ssm.style.color = 'var(--lime)'; }
+    if (cfb) cfb.style.display = 'none';
+    
+    setTimeout(function() {
+      closeShiftPicker();
+      renderCalendar();
+    }, 800);
+  }
 }
 
 </script>
