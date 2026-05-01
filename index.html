@@ -2670,75 +2670,172 @@ var _workerCalendars = {
 
 // Open worker profile with their own calendar
 function openWorkerProfile(workerId) {
-  // Get worker data
-  var w = _workers.find(function(x){return x.id===workerId;});
-  if(!w) { goTo('profile'); return; }
-  
-  // Set calendar data for this worker
-  var calData = _workerCalendars[workerId];
-  if(calData) {
-    _availDays = calData.days;
-    _shiftTimes = calData.shifts;
+  // Check if this is a REAL registered worker (id >= 100)
+  var realWorker = null;
+  if (workerId >= 100) {
+    var accounts = getAccounts();
+    var realWorkers = accounts.filter(function(a) { return a.type === 'worker'; });
+    var realIdx = workerId - 100;
+    if (realIdx < realWorkers.length) {
+      realWorker = realWorkers[realIdx];
+    }
+  }
+
+  if (realWorker) {
+    // ── REAL worker profile ────────────────────────────────────────
+    var fn = realWorker.firstName || '';
+    var ln = realWorker.lastName || '';
+    var fullName = (fn + ' ' + ln).trim();
+
+    // Name
+    var nameEl = document.querySelector('#page-profile .profile-name');
+    if (nameEl) nameEl.textContent = fullName;
+
+    // Initials
+    var iniEl = document.querySelector('#page-profile .profile-avatar-lg');
+    if (iniEl) {
+      iniEl.textContent = ((fn[0]||'W') + (ln[0]||'')).toUpperCase();
+      iniEl.style.background = 'linear-gradient(135deg,#c8f060,#7dcc3c)';
+      iniEl.style.color = '#0a0a0a';
+    }
+
+    // Role/city
+    var titleEl = document.getElementById('profileTitle');
+    if (titleEl) titleEl.textContent = (realWorker.profession || 'Substitute') + ' · ' + (realWorker.city || '');
+
+    // Bio
+    var bioEl = document.getElementById('profileBio');
+    if (bioEl) {
+      if (realWorker.about) {
+        bioEl.textContent = realWorker.about;
+        bioEl.style.color = 'var(--ink2)';
+        bioEl.style.fontStyle = 'normal';
+      } else {
+        bioEl.innerHTML = '<em style="color:var(--ink4)">' + (currentLang==='en' ? 'No description added yet.' : 'Ei kuvausta vielä.') + '</em>';
+      }
+    }
+
+    // Details
+    var indEl = document.getElementById('industryVal');
+    if (indEl) indEl.textContent = realWorker.profession || '—';
+    var typeEl = document.getElementById('typeVal');
+    if (typeEl) typeEl.textContent = currentLang==='en' ? 'Substitute' : 'Sijainen';
+    var expEl = document.getElementById('expVal');
+    if (expEl) expEl.textContent = currentLang==='en' ? 'New member' : 'Uusi jäsen';
+    var langEl = document.querySelector('#page-profile .detail-lang');
+    if (langEl) langEl.textContent = 'FI';
+    var cityEl = document.querySelector('#page-profile .detail-city');
+    if (cityEl) cityEl.textContent = realWorker.city || '—';
+
+    // Calendar - use their saved availability
+    _availDays = realWorker.availDays || [];
+    _shiftTimes = Object.assign({}, realWorker.shiftTimes || {});
+    _calDate = new Date(2026, 4, 1);
+
+    // Skills
+    var skillsDisplay = document.getElementById('profileSkillsDisplay');
+    var noSkillsMsg = document.getElementById('noSkillsMsg');
+    if (skillsDisplay) {
+      var tags = skillsDisplay.querySelectorAll('.skill-tag, .skill-tag-custom');
+      tags.forEach(function(t) { t.remove(); });
+      if (realWorker.skills && realWorker.skills.length > 0) {
+        if (noSkillsMsg) noSkillsMsg.style.display = 'none';
+        realWorker.skills.forEach(function(s) {
+          var span = document.createElement('span');
+          span.className = 'skill-tag';
+          span.textContent = s;
+          skillsDisplay.appendChild(span);
+        });
+      } else {
+        if (noSkillsMsg) noSkillsMsg.style.display = 'inline';
+      }
+    }
+
+    // Hide Edit skills button (not viewing own profile)
+    var editSkillsBtn = document.getElementById('editSkillsBtn');
+    if (editSkillsBtn) editSkillsBtn.style.display = 'none';
+
+    // Send message button - open real conversation
+    var msgBtn = document.getElementById('openModal');
+    if (msgBtn) {
+      msgBtn.textContent = '✉️ ' + (currentLang==='en' ? 'Send message' : 'Lähetä viesti');
+      msgBtn.style.background = 'var(--lime)';
+      msgBtn.style.color = 'var(--bg)';
+      msgBtn.style.border = 'none';
+      var wName = fullName;
+      var wProf = realWorker.profession || 'Worker';
+      msgBtn.onclick = function() {
+        openRealConversation(wName, wProf, realWorker.email);
+      };
+    }
+
+    // Updated date
+    var updEl = document.querySelector('#page-profile .p-updated');
+    if (!updEl) updEl = document.querySelector('#page-profile [class*="updated"]');
+    if (updEl && realWorker.registeredAt) {
+      var d = new Date(realWorker.registeredAt);
+      updEl.textContent = (currentLang==='en'?'Member since ':'Jäsen ') + d.toLocaleDateString('fi-FI');
+    }
+
+    // Availability badge
+    var availBadge = document.querySelector('#page-profile .avail-badge');
+    if (availBadge) {
+      availBadge.textContent = currentLang==='en' ? '● Available immediately' : '● Saatavilla heti';
+      availBadge.style.background = 'rgba(200,240,96,0.2)';
+    }
+
   } else {
-    _availDays = [];
-    _shiftTimes = {};
+    // ── DEMO worker profile ───────────────────────────────────────
+    var w = _workers.find(function(x) { return x.id === workerId; });
+    if (!w) { goTo('profile'); return; }
+
+    var calData = _workerCalendars[workerId];
+    if (calData) {
+      _availDays = calData.days;
+      _shiftTimes = calData.shifts;
+    } else {
+      _availDays = [];
+      _shiftTimes = {};
+    }
+
+    var nameEl = document.querySelector('#page-profile .profile-name');
+    if (nameEl) nameEl.textContent = w.name;
+
+    var iniEl = document.querySelector('#page-profile .profile-avatar-lg');
+    if (iniEl) {
+      iniEl.textContent = w.ini;
+      iniEl.style.background = 'linear-gradient(135deg,' + w.col + ',' + w.tc + ')';
+      iniEl.style.color = w.tc;
+    }
+
+    var titleEl = document.getElementById('profileTitle');
+    if (titleEl) titleEl.textContent = (currentLang==='en' ? w.en : w.fi) + ' · ' + w.city;
+
+    var bioEl = document.getElementById('profileBio');
+    if (bioEl) {
+      bioEl.style.fontStyle = 'normal';
+      bioEl.style.color = 'var(--ink2)';
+    }
+
+    var indEl = document.getElementById('industryVal');
+    if (indEl) indEl.textContent = w.skills ? w.skills[0] : '—';
+    var typeEl = document.getElementById('typeVal');
+    if (typeEl) typeEl.textContent = currentLang==='en' ? w.type_en.join(', ') : w.type_fi.join(', ');
+
+    var msgBtn = document.getElementById('openModal');
+    if (msgBtn) {
+      msgBtn.textContent = '✉️ ' + (currentLang==='en' ? 'Send message' : 'Lähetä viesti');
+      msgBtn.style.background = 'var(--lime)';
+      msgBtn.style.color = 'var(--bg)';
+      msgBtn.style.border = 'none';
+      msgBtn.onclick = function() { openConversation(w.name, w.fi, '👤'); };
+    }
+
+    var editBtn = document.getElementById('editSkillsBtn');
+    if (editBtn) editBtn.style.display = 'none';
   }
-  
-  // Update profile page with this worker's info
-  var nameEl = document.querySelector('#page-profile .p-name');
-  if(nameEl) nameEl.textContent = w.name;
-  
-  var roleEl = document.querySelector('#page-profile .p-role');
-  if(roleEl) roleEl.textContent = (currentLang==='en'?w.en:w.fi) + ' · ' + w.city;
-  
-  var iniEl = document.querySelector('#page-profile .p-ini');
-  if(iniEl) {
-    iniEl.textContent = w.ini;
-    iniEl.style.background = 'linear-gradient(135deg,'+w.col+','+w.tc+')';
-  }
-  
-  // Update avail badge
-  var availEl = document.querySelector('#page-profile .avail-badge');
-  if(availEl) availEl.textContent = currentLang==='en' ? w.avail_en : w.avail_fi;
-  
-  // Update details panel
-  var cityEl = document.querySelector('#page-profile .detail-city');
-  if(cityEl) cityEl.textContent = w.city;
-  
-  var langEl = document.querySelector('#page-profile .detail-lang');
-  if(langEl) langEl.textContent = w.lang.join(', ');
-  
-  var skillsEl = document.querySelector('#page-profile .detail-industry');
-  if(skillsEl && w.skills) skillsEl.textContent = w.skills[0] || '';
-  
-  // Update work type
-  var wtEl = document.querySelector('#page-profile .detail-wtype');
-  if(wtEl) wtEl.textContent = currentLang==='en' ? w.type_en.join(', ') : w.type_fi.join(', ');
-  
-  // Update experience
-  var expEl = document.querySelector('#page-profile .detail-exp');
-  if(expEl) expEl.textContent = w.exp || '8 years';
-  
-  // Update skills tags
-  var skillsTagsEl = document.querySelector('#page-profile .p-skills');
-  if(skillsTagsEl && w.skills) {
-    skillsTagsEl.innerHTML = w.skills.map(function(s){
-      return '<span class="skill-tag">'+s+'</span>';
-    }).join('');
-  }
-  
-  // Update Send message button to message this worker
-  var msgBtn = document.getElementById('openModal');
-  if(msgBtn) {
-    msgBtn._workerName = w.name;
-    msgBtn._workerRole = w.fi;
-    msgBtn.onclick = function() { openConversation(this._workerName, this._workerRole, '👤'); };
-  }
-  
-  // Reset calendar to May 2026
+
   _calDate = new Date(2026, 4, 1);
-  
-  // Navigate to profile
   goTo('profile');
 }
 
@@ -4395,6 +4492,125 @@ function confirmShift() {
   }
 }
 
+
+// ── Open real conversation with a registered user ────────────────────────────
+function openRealConversation(name, role, email) {
+  // Create or get conversation for this person
+  var chatName = document.getElementById('chatName');
+  var chatStatus = document.getElementById('chatStatus');
+  var chatAvatar = document.getElementById('chatAvatar');
+  var msgs = document.getElementById('chatMessages');
+
+  if (chatName) chatName.textContent = name;
+  if (chatStatus) { chatStatus.textContent = '● Online'; chatStatus.style.color = 'var(--lime)'; }
+  if (chatAvatar) {
+    var ini = name.split(' ').map(function(n){return n[0]||'';}).join('').toUpperCase().slice(0,2);
+    chatAvatar.textContent = ini;
+    chatAvatar.style.background = 'linear-gradient(135deg,#c8f060,#7dcc3c)';
+    chatAvatar.style.color = '#0a0a0a';
+  }
+
+  // Check if there's existing conversation history
+  var convKey = 'conv_' + (email || name).replace(/[^a-zA-Z0-9]/g,'_');
+  var savedMsgs = [];
+  try {
+    var saved = localStorage.getItem(convKey);
+    if (saved) savedMsgs = JSON.parse(saved);
+  } catch(e) {}
+
+  if (msgs) {
+    msgs.innerHTML = '';
+    if (savedMsgs.length === 0) {
+      // Show empty state with intro
+      msgs.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">' +
+        '<div style="font-size:24px;margin-bottom:8px">💬</div>' +
+        '<p style="font-size:12px">' + (currentLang==='en' ?
+          'Start a conversation with ' + name :
+          'Aloita keskustelu henkilön ' + name + ' kanssa') + '</p></div>';
+    } else {
+      savedMsgs.forEach(function(m) {
+        var div = document.createElement('div');
+        var isMe = m.from === 'me';
+        div.style.cssText = 'display:flex;gap:10px;justify-content:' + (isMe?'flex-end':'flex-start') + ';margin-bottom:6px';
+        div.innerHTML = isMe ?
+          '<div style="max-width:75%"><div style="background:rgba(200,240,96,0.12);border:1px solid rgba(200,240,96,0.25);border-radius:12px 12px 4px 12px;padding:10px 13px;font-size:12px;color:var(--ink);line-height:1.6">' + m.text + '</div><div style="font-size:10px;color:var(--ink4);margin-top:3px;text-align:right">' + m.time + '</div></div>' :
+          '<div style="width:30px;height:30px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0a0a0a;flex-shrink:0">' + (name[0]||'?') + '</div><div style="max-width:75%"><div style="background:var(--bg);border:1px solid var(--border);border-radius:12px 12px 12px 4px;padding:10px 13px;font-size:12px;color:var(--ink2);line-height:1.6">' + m.text + '</div><div style="font-size:10px;color:var(--ink4);margin-top:3px">' + m.time + '</div></div>';
+        msgs.appendChild(div);
+      });
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+  }
+
+  // Store current conversation key for send button
+  window._currentConvKey = convKey;
+  window._currentConvName = name;
+
+  // Update send button to save real messages
+  var sendBtn = document.querySelector('#page-messaging button[onclick*="sendMsg"]') ||
+                document.querySelector('#page-messaging .send-btn');
+  if (sendBtn) {
+    sendBtn.onclick = function() { sendRealMessage(); };
+  }
+
+  // Add real message to sidebar
+  addToConvSidebar(name, role, email, convKey);
+
+  goTo('messaging');
+}
+
+function sendRealMessage() {
+  var input = document.querySelector('#page-messaging input[type="text"], #page-messaging textarea, #msgInput');
+  if (!input || !input.value.trim()) return;
+
+  var text = input.value.trim();
+  var time = new Date().toLocaleTimeString('fi-FI', {hour:'2-digit',minute:'2-digit'});
+  var convKey = window._currentConvKey || 'conv_default';
+
+  // Save to localStorage
+  var msgs = [];
+  try {
+    var saved = localStorage.getItem(convKey);
+    if (saved) msgs = JSON.parse(saved);
+  } catch(e) {}
+  msgs.push({from:'me', text:text, time:time});
+  try { localStorage.setItem(convKey, JSON.stringify(msgs)); } catch(e) {}
+
+  // Add to UI
+  var msgsEl = document.getElementById('chatMessages');
+  if (msgsEl) {
+    var div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;margin-bottom:6px';
+    div.innerHTML = '<div style="max-width:75%"><div style="background:rgba(200,240,96,0.12);border:1px solid rgba(200,240,96,0.25);border-radius:12px 12px 4px 12px;padding:10px 13px;font-size:12px;color:var(--ink);line-height:1.6">' + text + '</div><div style="font-size:10px;color:var(--ink4);margin-top:3px;text-align:right">' + time + '</div></div>';
+    msgsEl.appendChild(div);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  input.value = '';
+}
+
+function addToConvSidebar(name, role, email, convKey) {
+  var sidebar = document.querySelector('#page-messaging .conv-list, #page-messaging [style*="overflow-y"]');
+  if (!sidebar) return;
+
+  // Remove existing entry for this person
+  var existing = sidebar.querySelector('[data-conv-key="' + convKey + '"]');
+  if (existing) existing.remove();
+
+  // Add new entry at top
+  var div = document.createElement('div');
+  div.setAttribute('data-conv-key', convKey);
+  div.setAttribute('data-name', name);
+  div.className = 'conv-item';
+  div.style.cssText = 'padding:14px;cursor:pointer;border-bottom:1px solid var(--border);background:rgba(200,240,96,0.06);border-left:2px solid var(--lime)';
+  div.onclick = function() { openRealConversation(name, role, email); };
+  var ini = name.split(' ').map(function(n){return n[0]||'';}).join('').toUpperCase().slice(0,2);
+  div.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">' +
+    '<div style="width:28px;height:28px;background:linear-gradient(135deg,#c8f060,#7dcc3c);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#0a0a0a;flex-shrink:0">' + ini + '</div>' +
+    '<span style="font-size:13px;font-weight:500;color:var(--ink)">' + name + '</span>' +
+    '<span style="background:var(--lime);color:var(--bg);border-radius:100px;padding:1px 6px;font-size:9px;font-weight:700;margin-left:auto">NEW</span>' +
+    '</div><div style="font-size:11px;color:var(--lime);padding-left:36px">✓ Registered member</div>';
+  sidebar.insertBefore(div, sidebar.firstChild);
+}
+
 </script>
 
 <div class="page" id="page-worker-dashboard">
@@ -4883,7 +5099,7 @@ function confirmShift() {
 
       <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
         <input type="text" id="msgInput" placeholder="Kirjoita viesti..." style="flex:1;padding:10px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-pill);font-size:12px;color:var(--ink);font-family:var(--font-body);outline:none" onkeydown="if(event.key==='Enter')sendMsg()"/>
-        <button onclick="sendMsg()" style="background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);padding:10px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">Lähetä →</button>
+        <button onclick="sendRealMessage()" style="background:var(--lime);color:var(--bg);border:none;border-radius:var(--radius-pill);padding:10px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-body)">Lähetä →</button>
       </div>
     </div>
   </div>
