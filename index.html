@@ -850,7 +850,7 @@ td{color:var(--ink2)}
       <form id="eRegForm">
         <div class="form-group"><label data-i18n="lbl_company">Yrityksen nimi *</label><input type="text" name="company" data-i18n="ph_company" data-i18n-attr="placeholder" placeholder="Yritys Oy" required/></div>
         <div class="form-row">
-          <div class="form-group"><label data-i18n="lbl_ytunnus">Y-tunnus *</label><input type="text" data-i18n="ph_ytunnus" data-i18n-attr="placeholder" placeholder="1234567-8" required/></div>
+          <div class="form-group"><label data-i18n="lbl_ytunnus">Y-tunnus *</label><input type="text" data-i18n="ph_ytunnus" data-i18n-attr="placeholder" name="businessId" placeholder="1234567-8" required/></div>
           <div class="form-group"><label data-i18n="lbl_industry">Toimiala *</label>
             <select required>
               <option value="" data-i18n="ind_all">Valitse ammattiryhmä</option>
@@ -893,7 +893,7 @@ td{color:var(--ink2)}
             <option>Helsinki</option><option>Espoo</option><option>Tampere</option><option>Vantaa</option><option>Oulu</option><option>Turku</option><option>Jyväskylä</option><option>Lahti</option>
           </select>
         </div>
-        <div class="form-group"><label data-i18n="lbl_contact">Yhteyshenkilö *</label><input type="text" data-i18n="ph_contact" data-i18n-attr="placeholder" placeholder="Etunimi Sukunimi" required/></div>
+        <div class="form-group"><label data-i18n="lbl_contact">Yhteyshenkilö *</label><input type="text" name="contact" data-i18n="ph_contact" data-i18n-attr="placeholder" placeholder="Etunimi Sukunimi" required/></div>
         <div class="form-group"><label data-i18n="lbl_email">Sähköposti *</label><input type="email" data-i18n="ph_email_employer" data-i18n-attr="placeholder" placeholder="hr@yritys.fi" required/></div>
         <div class="form-group"><label data-i18n="lbl_phone">Puhelin</label><input type="tel" data-i18n="ph_phone_employer" data-i18n-attr="placeholder" placeholder="+358 9 123 4567"/></div>
         <div class="form-group"><label data-i18n="lbl_company_desc">Yrityksen kuvaus</label><textarea data-i18n="ph_company_desc" data-i18n-attr="placeholder" placeholder="Kerro yrityksestänne..."></textarea></div>
@@ -3506,14 +3506,16 @@ async function registerNewEmployer(e) {
   const form = document.getElementById('eRegForm');
   if (!form) return;
   
-  const company = form.querySelector('input[name="company"]')?.value?.trim();
-  const businessId = form.querySelector('input[name="businessId"]')?.value?.trim();
-  const email = form.querySelector('input[name="email"]')?.value?.trim();
-  const phone = form.querySelector('input[name="phone"]')?.value?.trim() || 
-                form.querySelector('input[type="tel"]')?.value?.trim();
-  const contact = form.querySelector('input[name="contact"]')?.value?.trim();
-  const industry = form.querySelector('select')?.value;
-  const citySelect = form.querySelectorAll('select')[1]?.value;
+  // Read all form fields reliably
+  const allTextInputs = form.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+  const company = (form.querySelector('input[name="company"]') || allTextInputs[0])?.value?.trim();
+  const businessId = (form.querySelector('input[name="businessId"]') || allTextInputs[1])?.value?.trim();
+  const contact = (form.querySelector('input[name="contact"]') || allTextInputs[2])?.value?.trim();
+  const email = (form.querySelector('input[name="email"]') || form.querySelector('input[type="email"]'))?.value?.trim();
+  const phone = (form.querySelector('input[name="phone"]') || form.querySelector('input[type="tel"]'))?.value?.trim();
+  const allSelects = form.querySelectorAll('select');
+  const industry = (form.querySelector('select[name="industry"]') || allSelects[0])?.value;
+  const citySelect = (form.querySelector('select[name="city"]') || allSelects[1])?.value;
   const description = form.querySelector('textarea')?.value?.trim();
   const password = form.querySelector('input[type="password"]')?.value;
   
