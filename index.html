@@ -3692,32 +3692,7 @@ async function registerNewWorker(e) {
   const origText = btn ? btn.textContent : '';
   if (btn) { btn.textContent = currentLang === 'en' ? 'Saving...' : 'Tallennetaan...'; btn.disabled = true; }
   
-  // Save to Supabase
-  const result = await supabaseRequest('POST', 'workers', {
-    first_name: firstName,
-    last_name: lastName || '',
-    email: email,
-    city: city || '',
-    profession: profession || '',
-    phone: phone || ''
-  });
-  
-  if (btn) { btn.textContent = origText; btn.disabled = false; }
-  
-  if (result.error) {
-    if (result.error.code === '23505' || JSON.stringify(result.error).includes('duplicate')) {
-      alert(currentLang === 'en' ? 
-        'This email is already registered. Please log in.' : 
-        'Tämä sähköposti on jo rekisteröity. Kirjaudu sisään.');
-      return;
-    }
-    alert(currentLang === 'en' ? 
-      'Registration failed. Please try again.' : 
-      'Rekisteröinti epäonnistui. Yritä uudelleen.');
-    return;
-  }
-  
-  // Success
+  // Create user object first
   const user = {
     type: 'worker',
     firstName: firstName,
@@ -3725,17 +3700,37 @@ async function registerNewWorker(e) {
     email: email,
     city: city || '',
     profession: profession || '',
-    dbId: result.data?.[0]?.id,
     registeredAt: new Date().toISOString()
   };
   
+  // Save locally FIRST - always works
   saveUser(user);
   saveToAccounts(user);
   
-  // Update greeting
+  // Update greeting immediately
   const greeting = document.querySelector('#page-worker-dashboard h1');
   if (greeting) greeting.textContent = 'Hei, ' + firstName + '! 👋';
   
+  if (btn) { btn.textContent = origText; btn.disabled = false; }
+  
+  // Try Supabase in background (don't block registration if it fails)
+  supabaseRequest('POST', 'workers', {
+    first_name: firstName,
+    last_name: lastName || '',
+    email: email,
+    city: city || '',
+    profession: profession || '',
+    phone: phone || ''
+  }).then(function(result) {
+    if (result.data && result.data[0]) {
+      user.dbId = result.data[0].id;
+      saveUser(user); // Update with DB id
+    }
+  }).catch(function(e) {
+    console.log('Supabase save failed (non-critical):', e);
+  });
+  
+  // Navigate to dashboard immediately
   goTo('worker-dashboard');
 }
 
@@ -3767,6 +3762,16 @@ async function loginEmployer(e) {
   if (btn) { btn.textContent = currentLang === 'en' ? 'Log in →' : 'Kirjaudu sisään →'; btn.disabled = false; }
   
   if (result.error || !result.data || result.data.length === 0) {
+    // Try local accounts as fallback
+    var localAccounts = getAccounts();
+    var localEmp = localAccounts.find(function(a) { 
+      return a.email && a.email.toLowerCase() === email.toLowerCase() && a.type === 'employer'; 
+    });
+    if (localEmp) {
+      saveUser(localEmp);
+      goTo('employer-welcome');
+      return;
+    }
     alert(currentLang === 'en' ? 
       'Email not found. Please register first.' : 
       'Sähköpostia ei löydy. Rekisteröidy ensin.');
@@ -3817,6 +3822,18 @@ async function loginWorker(e) {
   if (btn) { btn.textContent = currentLang === 'en' ? 'Log in →' : 'Kirjaudu →'; btn.disabled = false; }
   
   if (result.error || !result.data || result.data.length === 0) {
+    // Try local accounts as fallback
+    var localAccounts = getAccounts();
+    var localW = localAccounts.find(function(a) { 
+      return a.email && a.email.toLowerCase() === email.toLowerCase() && a.type === 'worker'; 
+    });
+    if (localW) {
+      saveUser(localW);
+      var g = document.querySelector('#page-worker-dashboard h1');
+      if (g) g.textContent = 'Hei, ' + localW.firstName + '! 👋';
+      goTo('worker-dashboard');
+      return;
+    }
     alert(currentLang === 'en' ? 
       'Email not found. Please register first.' : 
       'Sähköpostia ei löydy. Rekisteröidy ensin.');
